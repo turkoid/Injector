@@ -20,6 +20,14 @@ namespace Injector {
             } catch (Exception ex) {
                 HandleException("An unknown error occurred. See log for details", ex);
             }
+            WaitForUserInput();
+        }
+
+        public static void WaitForUserInput() {
+            if (Options?.Interactive ?? false) {
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey(true);
+            }
         }
 
         private static void InternalErrorHandler(string errorMessage, string debugMessage = null) {
@@ -27,12 +35,7 @@ namespace Injector {
             if (!string.IsNullOrEmpty(debugMessage)) {
                 logger.Debug(debugMessage);
             }
-
-            if (Options?.Interactive ?? false) {
-                Console.WriteLine("Press any key to exit...");
-                Console.ReadKey(true);
-            }
-
+            WaitForUserInput();
             logger.Debug("Exiting...");
             Environment.Exit(1);
         }
