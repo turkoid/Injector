@@ -39,10 +39,10 @@ namespace Injector {
         [Option('c', "config", HelpText = "Path to config file to use")]
         public string ConfigFile { get; set; }
 
-        [Option('q', "quiet", Default = false, HelpText = "Don't print messages to console")]
+        [Option('q', "quiet", Default = false, HelpText = "Whether to print to console too. Errors always get printed to console")]
         public bool Quiet { get; set; }
 
-        [Option('n', "non-interactive", Default = false, HelpText = "Don't pause after errors")]
+        [Option('n', "non-interactive", Default = false, HelpText = "Whether to pause after errors)]
         public bool IsNonInteractive { get; set; }
 
         private IniData _Config { get; set; }
