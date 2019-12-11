@@ -3,11 +3,9 @@ using System.IO;
 
 namespace Injector {
     class Logger {
-        private const string LOG_FILENAME = "injector.log";
-
         public enum LoggingLevel { DEBUG, INFO, WARN, ERROR }
 
-        public InjectorOptions Options { get; set; }
+        private const string LOG_FILENAME = "injector.log";
         private static Logger _logger;
 
         private Logger() {
@@ -36,7 +34,7 @@ namespace Injector {
         }
 
         public void Log(LoggingLevel level, string message) {
-            Log(level, message, Options?.Quiet ?? false);
+            Log(level, message, Program.Options?.Quiet ?? false);
         }
 
         public void Debug(string message) {
@@ -48,7 +46,7 @@ namespace Injector {
         }
 
         public void Info(string message) {
-            Info(message, Options?.Quiet ?? false);
+            Info(message, Program.Options?.Quiet ?? false);
         }
 
         public void Warn(string message, bool quiet) {
@@ -56,7 +54,7 @@ namespace Injector {
         }
 
         public void Warn(string message) {
-            Warn(message, Options?.Quiet ?? false);
+            Warn(message, Program.Options?.Quiet ?? false);
         }
 
         public void Error(string message) {

@@ -7,7 +7,7 @@ using IniParser.Model;
 
 namespace Injector {
     public class InjectorOptions {
-        private static Logger logger = Logger.Instance();
+        private static readonly Logger logger = Logger.Instance();
 
         [Option('p', "pid", HelpText = "The process id of the process to inject into")]
         public int? ProcessId { get; set; }
@@ -15,7 +15,7 @@ namespace Injector {
         [Option('x', "process", HelpText = "The process name of the process to inject into")]
         public string ProcessName { get; set; }
 
-        [Option('o', "open", HelpText = "Path to process to start")]
+        [Option('s', "start", HelpText = "Path to process to start")]
         public string StartProcess { get; set; }
 
         [Option('w', "win", Default = false, HelpText = "Indicates the process to open is a windows app")]
@@ -42,8 +42,8 @@ namespace Injector {
         [Option('q', "quiet", Default = false, HelpText = "Whether to print to console too. Errors always get printed to console")]
         public bool Quiet { get; set; }
 
-        [Option('n', "non-interactive", Default = false, HelpText = "Whether to pause after errors)]
-        public bool IsNonInteractive { get; set; }
+        [Option('i', "interactive", Default = false, HelpText = "Whether to wait for user input")]
+        public bool Interactive { get; set; }
 
         private IniData _Config { get; set; }
 

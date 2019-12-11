@@ -5,14 +5,15 @@ using CommandLine;
 
 namespace Injector {
     class Program {
-        private static Logger logger = Logger.Instance();
+        private static readonly Logger logger = Logger.Instance();
+        public static InjectorOptions Options { get; set; }
 
         static void Main(string[] args) {
             // dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true
             try {
                 Parser.Default.ParseArguments<InjectorOptions>(args)
                     .WithParsed(opts => {
-                        logger.Options = opts;
+                        Options = opts;
                         Injector injector = new Injector(opts);
                         injector.Inject();
                     });
@@ -27,7 +28,7 @@ namespace Injector {
                 logger.Debug(debugMessage);
             }
 
-            if (!logger.Options?.IsNonInteractive ?? true) {
+            if (Options?.Interactive ?? false) {
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey(true);
             }
@@ -51,3 +52,4 @@ namespace Injector {
             InternalErrorHandler(errorMessage, debugMessage);
         }
     }
+}
