@@ -65,7 +65,7 @@ To start a Microsoft Store App, you need to use a specific format. Follow the in
 
 Use the `PackageFamilyName!Applicationid`. Don't include the `explorer.exe shell:appsFolder\`. So from the article, you would pass `Microsoft.BingWeather_8wekyb3d8bbwe!App`.
 
-**Note** Don't forgot to specify the process is a Microsoft store app by using `-w | --win` or `win=true` in the config file
+**Note**: Don't forgot to specify the process is a Microsoft store app by using `-w | --win` or `win=true` in the config file
 
 ## Config File
 
