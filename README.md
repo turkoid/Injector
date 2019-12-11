@@ -12,34 +12,52 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
 ## Commandline Options
 
-  All options are optional except otherwise specified. 
+  All options are optional except otherwise specified.
 
-  * `-p | --pid` 
+  * `-p | --pid`
 
-  The process id of the process to inject into. `process` and `open` are ignored if this is used
+    The process id of the process to inject into. `process` and `open` are ignored if this is used
 
-  * `-x | --process` 
+  * `-x | --process`
 
-  The process name of the process to inject into. Alternatively, can be the name of the true process after using `--start`
-  
-  * `-s | --start` 
-  The path to process to start. Supports Microsoft store apps (see below)
-  * `-w | --win` 
-  If passed, then the process to start is a Microsoft store app (Default: `false`)
-  * `-d | --delay` 
-  Specifies the delay, in seconds, after the process has started before the injection process starts (Default: `5`)
-  * `-m | --multi-dll-delay` 
-  Specifies the delay, in seconds, betweeen injecting multiple delays (Default: `1`)
-  * `-t | --timeout` 
-  Specifies the timeout, in seconds, when attempting to find the process by name (Default: `10`)
-  * `-c | --config` 
-  Path to the config file. Options defined in the config file override command line args
+    The process name of the process to inject into. Alternatively, can be the name of the true process after using `--start`
+
+  * `-s | --start`
+
+    The path to process to start. Supports Microsoft store apps (see below)
+
+  * `-w | --win`
+
+    If passed, then the process to start is a Microsoft store app (Default: `false`)
+
+  * `-d | --delay`
+
+    Specifies the delay, in seconds, after the process has started before the injection process starts (Default: `5`)
+
+  * `-m | --multi-dll-delay`
+
+    Specifies the delay, in seconds, betweeen injecting multiple delays (Default: `1`)
+
+  * `-t | --timeout`
+
+    Specifies the timeout, in seconds, when attempting to find the process by name (Default: `10`)
+
+  * `-c | --config`
+
+    Path to the config file. Options defined in the config file override command line args
+
   * `-q | --quiet`
-  If passed, then only errors are printed to the console. Everything is still printed to a log file (Default: `false`)
-  * `-i | --interactive` 
-  If passed, then program will pause before exiting, including errors (Default: `false`)
-  * `-l | --dlls` 
-  One or more dlls to inject into the process, separated by space. Full paths can be used or config keys (see below)
+
+    If passed, then only errors are printed to the console. Everything is still printed to a log file (Default: `false`)
+
+  * `-i | --interactive`
+
+    If passed, then program will pause before exiting, including errors (Default: `false`)
+
+  * `-l | --dlls`
+
+    One or more dlls to inject into the process, separated by space. Full paths can be used or config keys (see below)
+
 
 ## Microsoft Store Apps
 
