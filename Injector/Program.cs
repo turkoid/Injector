@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Metadata;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -31,10 +29,10 @@ namespace Injector {
                             // find process by pid
                             int pid = opts.ProcessId.Value;
                             try {
-                                logger.Info($"Attempting to find running process by id: {opts.ProcessId}...");
+                                logger.Info($"Attempting to find running process by id...");
                                 process = Process.GetProcessById(opts.ProcessId.Value);
                             } catch (ArgumentException) {
-                                HandleError($"Could not find pid: {pid}.");
+                                HandleError($"Could not find process id {pid}");
                             }
                         } else if (opts.StartProcess != null) {
                             logger.Debug("Checking if process has already started");
@@ -51,7 +49,7 @@ namespace Injector {
                                     app_args = $"shell:AppsFolder\\{opts.StartProcess}";
                                 }
 
-                                logger.Info($"Starting {opts.StartProcess}...");
+                                logger.Info($"Starting {opts.StartProcess}");
                                 process = Process.Start(app, app_args);
 
                                 if (opts.ProcessName != null) {
@@ -63,7 +61,7 @@ namespace Injector {
                                 logger.Info("Process already started.");
                             }
                         } else if (opts.ProcessName != null) {
-                            logger.Info($"Attempting to find running process by name {opts.ProcessName}...");
+                            logger.Info($"Attempting to find running process by name...");
                             process = WaitForProcess(opts.ProcessName, opts.Timeout);
                         }
 
@@ -71,9 +69,12 @@ namespace Injector {
                             HandleError("No process to inject.");
                         }
 
-                        logger.Info(
-                            $"Delaying injection by {opts.InjectionDelay} second(s) to allow the process to initialize fully");
-                        Thread.Sleep(opts.InjectionDelay * 1000);
+                        if (opts.InjectionDelay > 0) {
+                            logger.Info(
+                                $"Delaying injection by {opts.InjectionDelay} second(s) to allow the process to initialize fully");
+                            Thread.Sleep(opts.InjectionDelay * 1000);
+                        }
+
                         if (process.WaitForInputIdle()) {
                             List<FileInfo> dlls = new List<FileInfo>();
                             foreach (string dll in opts.Dlls) {
@@ -85,7 +86,7 @@ namespace Injector {
                                 dlls.Add(dllInfo);
                             }
 
-                            logger.Info($"Injecting {dlls.Count} DLL(s) into {process.ProcessName} ({process.Id}).");
+                            logger.Info($"Injecting {dlls.Count} DLL(s) into {process.ProcessName} ({process.Id})");
 
                             Injector injector = new Injector();
                             injector.Inject(process, dlls.ToArray(), opts.InjectLoopDelay * 1000);
@@ -121,7 +122,7 @@ namespace Injector {
             Process process = null;
             timeout *= 1000;
             int polling_rate = 500;
-            logger.Debug($"Waiting for process: {name}");
+            logger.Debug($"Waiting for process {name}");
             while (timeout > 0) {
                 process = FindProcessByName(name);
                 if (process != null) {
@@ -134,7 +135,7 @@ namespace Injector {
             }
 
             if (process == null) {
-                HandleError($"Timed out attempting to find {name}.");
+                HandleError($"Timed out waiting for {name}");
             }
 
             return process;
@@ -159,7 +160,7 @@ namespace Injector {
         }
 
         public class Logger {
-            public enum LoggingLevel { DEBUG, INFO, ERROR }
+            public enum LoggingLevel { DEBUG, INFO, WARN, ERROR }
 
             public String LogPath { get; set; }
             public bool Quiet { get; set; }
@@ -172,7 +173,7 @@ namespace Injector {
             private void InternalLog(LoggingLevel level, string message, bool quiet, bool append = true) {
                 if (level == LoggingLevel.ERROR) {
                     Console.Error.WriteLine(message);
-                } else if (!quiet) {
+                } else if (!quiet && level != LoggingLevel.DEBUG) {
                     Console.WriteLine(message);
                 }
 
@@ -180,7 +181,6 @@ namespace Injector {
                     w.WriteLine($"{DateTime.Now.ToString("s")} | {level.ToString("g")}: {message}");
                 }
             }
-
 
             public void Log(LoggingLevel level, string message, bool quiet) {
                 this.InternalLog(level, message, quiet);
@@ -201,6 +201,14 @@ namespace Injector {
 
             public void Info(string message) {
                 this.Info(message, this.Quiet);
+            }
+
+            public void Warn(string message, bool quiet) {
+                this.Log(LoggingLevel.WARN, message, quiet);
+            }
+
+            public void Warn(string message) {
+                this.Warn(message, this.Quiet);
             }
 
             public void Error(string message) {
@@ -225,7 +233,7 @@ namespace Injector {
             [Option('d', "delay", Default = 5, HelpText = "How long to wait, in seconds, before injecting")]
             public int InjectionDelay { get; set; }
 
-            [Option('i', "dll_delay", Default = 1,
+            [Option('i', "multi-dll-delay", Default = 1,
                 HelpText = "How long to wait, in seconds, between injecting multiple DLLs")]
             public int InjectLoopDelay { get; set; }
 
@@ -249,7 +257,7 @@ namespace Injector {
                 get {
                     if (this._Config == null && this.ConfigFile != null) {
                         var parser = new FileIniDataParser();
-                        logger.Debug($"Reading from config file: {this.ConfigFile}");
+                        logger.Debug($"Reading from config file {this.ConfigFile}");
                         this._Config = parser.ReadFile(this.ConfigFile);
                     }
 
@@ -292,6 +300,25 @@ namespace Injector {
             }
 
             public void Validate() {
+                if (this.InjectionDelay < 0) {
+                    HandleError("-d/--delay cannot be negative");
+                }
+
+                if (this.InjectLoopDelay < 0) {
+                    HandleError("-i/--multi-dll-delay cannot be negative");
+                }
+
+                if (this.Timeout < 0) {
+                    HandleError("-t/--timeout cannot be negative");
+                }
+
+                if (this.InjectionDelay == 0) {
+                    logger.Warn("No delay specified before attempting to inject. This could cause it to crash");
+                }
+
+                if (this.InjectLoopDelay == 0) {
+                    logger.Warn("No delay between injecting multiple delays. This could cause it to crash");
+                }
             }
         }
 
@@ -352,12 +379,12 @@ namespace Injector {
                 logger.Debug("Retrieving the memory address to LoadLibraryA");
                 IntPtr loadLibraryAddr = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
                 if (loadLibraryAddr == IntPtr.Zero) {
-                    HandleError("Unable not retrieve the address for LoadLibraryA.", true);
+                    HandleError("Unable not retrieve the address for LoadLibraryA", true);
                 }
 
                 int dllIndex = 1;
                 foreach (FileInfo dll in dlls) {
-                    logger.Info($"Attempting to inject DLL, {dllIndex} of {dlls.Length}: {dll.Name}...");
+                    logger.Info($"Attempting to inject DLL, {dllIndex} of {dlls.Length}, {dll.Name}...");
                     uint size = (uint)(dll.FullName.Length + 1);
                     logger.Debug("Allocating memory in the process to write the DLL path");
                     IntPtr allocMemAddress = VirtualAllocEx(procHandle, IntPtr.Zero, size, MEM_CREATE, PAGE_READWRITE);
