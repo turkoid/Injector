@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Injector": {
+      "commandName": "Project",
+      "commandLineArgs": "-c \"C:\\Users\\turkoid\\Desktop\\injector.ini\" supernova"
+    }
+  }
+}

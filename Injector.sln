@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injector", "Injector\Injector.csproj", "{EB85EFDF-FA65-4130-98BA-0D3AB8ECEFED}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{12634420-DB3F-43E8-9273-D9B761064D59}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EB85EFDF-FA65-4130-98BA-0D3AB8ECEFED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB85EFDF-FA65-4130-98BA-0D3AB8ECEFED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB85EFDF-FA65-4130-98BA-0D3AB8ECEFED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB85EFDF-FA65-4130-98BA-0D3AB8ECEFED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {68C4B84D-5072-409E-860A-1A1893B648E4}
+	EndGlobalSection
+EndGlobal
