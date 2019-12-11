@@ -43,7 +43,8 @@ namespace Injector {
         [Option('i', "interactive", Default = false, HelpText = "Whether to wait for user input")]
         public bool Interactive { get; set; }
 
-        [Option('l', "dlls", HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order")]
+        [Value(0, MetaName = "DLLs",
+            HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order. Use 'dlls' for the config file")]
         public IEnumerable<string> Dlls { get; set; }
 
         private IniData _Config { get; set; }
