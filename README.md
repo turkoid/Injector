@@ -5,14 +5,12 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 ## Features
 
   * Completely command line driven. No GUI
-  * Most command line options supported in config file
+  * Most command-line options supported in config file
   * Can inject multiple dlls with one call
   * Can be specified to start the process before injecting (Supports Microsoft Store apps too)
   * Delays can be adjusted to provide stable injections
 
-## Commandline Options
-
-  All options are optional except otherwise specified.
+## Command-line Options
 
   * `-p | --pid`
 
@@ -20,7 +18,7 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
   * `-x | --process`
 
-    The process name of the process to inject into. Alternatively, can be the name of the true process after using `--start`
+    The process name of the process to inject into. Alternatively, can be the name of the true process after using `start`
 
   * `-s | --start`
 
@@ -44,7 +42,7 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
   * `-c | --config`
 
-    Path to the config file. Options defined in the config file override command line args
+    Path to the config file. Options defined in the config file override command-line args
 
   * `-q | --quiet`
 
@@ -69,9 +67,7 @@ Use the `PackageFamilyName!Applicationid`. Don't include the `explorer.exe shell
 
 ## Config File
 
-All options can be defined in easy to use config files. Allows you to easily switch between configs. Values in the file override does in the command line arguments.
-
-The config file is just a basic INI file.
+All options can be defined using an INI config file. Allows you to easily switch between configs. Values in the file override those passed in the command line.
 
 ```
 [Config]
@@ -97,10 +93,11 @@ You can specify easy to use keys instead of the the full paths to the DLLs when 
 
 **It keeps crashing!**
 
-It could you need to adjust delays. Try and use the injector after starting the program manually and waiting till you feel the program is in a state that it has fully initialized (Note: the injector is smart enough to not start the process, if specified, when it's already running).
+You might need to adjust delays. Try and use the injector after starting the program manually and waiting till you feel the program is in a state that it has fully initialized (The injector is smart enough to not start the process, if specified, when it's already running).
 
-If the injector works, then the delays. The most effective one is `--delay`
-If the injector doesn't not work, sometimes it helps to adjust the order of the injection, if doing more than one dll.
+If the injector works, then adjust the delays. The most effective one is `--delay`
+
+If the injector doesn't work, sometimes it helps to adjust the order of the injection, if using more than one dll.
 
 Unfortunately, if the injection still fails, but works with other injection utilities, then open an issue and I'll try and take a look at it.
 
