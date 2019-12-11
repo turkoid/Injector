@@ -81,10 +81,10 @@ namespace Injector {
                 logger.Debug("Overriding command line args with config values");
                 ProcessId = ParseConfigValue("pid", typeof(int), ProcessId);
                 ProcessName = ParseConfigValue("process", typeof(string), ProcessName);
-                StartProcess = ParseConfigValue("open", typeof(string), StartProcess);
+                StartProcess = ParseConfigValue("start", typeof(string), StartProcess);
                 IsWindowsApp = ParseConfigValue("win", typeof(bool), IsWindowsApp);
                 InjectionDelay = ParseConfigValue("delay", typeof(int), InjectionDelay);
-                InjectLoopDelay = ParseConfigValue("dll_delay", typeof(int), InjectLoopDelay);
+                InjectLoopDelay = ParseConfigValue("multi-dll-delay", typeof(int), InjectLoopDelay);
                 Timeout = ParseConfigValue("timeout", typeof(int), Timeout);
                 Quiet = ParseConfigValue("quiet", typeof(bool), Quiet);
                 Dlls = ParseConfigValue("dlls", typeof(List<>), Dlls);
@@ -136,6 +136,16 @@ namespace Injector {
             sb.AppendLine($"interactive={Interactive}");
             sb.AppendLine($"dlls={string.Join(' ', Dlls)}");
             logger.Debug(sb.ToString());
+        }
+
+        public struct CommandLineOption {
+            public char ShortOption;
+            public string LongOption;
+
+            public CommandLineOption(char shortOption, string longOption) {
+                ShortOption = shortOption;
+                LongOption = longOption;
+            }
         }
     }
 }
