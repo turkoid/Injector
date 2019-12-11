@@ -49,18 +49,18 @@ namespace Injector {
 
         public IniData Config {
             get {
-                if (this._Config == null && this.ConfigFile != null) {
+                if (_Config == null && ConfigFile != null) {
                     var parser = new FileIniDataParser();
-                    logger.Debug($"Reading from config file {this.ConfigFile}");
-                    this._Config = parser.ReadFile(this.ConfigFile);
+                    logger.Debug($"Reading from config file {ConfigFile}");
+                    _Config = parser.ReadFile(ConfigFile);
                 }
 
-                return this._Config;
+                return _Config;
             }
         }
 
         private dynamic ParseConfigValue(string key, Type type, dynamic defaultValue) {
-            if (this.Config.TryGetKey($"Config.{key}", out string value)) {
+            if (Config.TryGetKey($"Config.{key}", out string value)) {
                 logger.Debug($"Using config value for {key}");
                 value = value.Trim();
                 value = value == "" ? null : value;
@@ -76,47 +76,47 @@ namespace Injector {
         }
 
         public void UpdateFromFile() {
-            if (this.Config != null) {
+            if (Config != null) {
                 logger.Debug("Overriding command line args with config values");
-                this.ProcessId = ParseConfigValue("pid", typeof(int), this.ProcessId);
-                this.ProcessName = ParseConfigValue("process", typeof(string), this.ProcessName);
-                this.StartProcess = ParseConfigValue("open", typeof(string), this.StartProcess);
-                this.IsWindowsApp = ParseConfigValue("win", typeof(bool), this.IsWindowsApp);
-                this.InjectionDelay = ParseConfigValue("delay", typeof(int), this.InjectionDelay);
-                this.InjectLoopDelay = ParseConfigValue("dll_delay", typeof(int), this.InjectLoopDelay);
-                this.Timeout = ParseConfigValue("timeout", typeof(int), this.Timeout);
-                this.Quiet = ParseConfigValue("quiet", typeof(bool), this.Quiet);
-                this.Dlls = ParseConfigValue("dlls", typeof(List<>), this.Dlls);
+                ProcessId = ParseConfigValue("pid", typeof(int), ProcessId);
+                ProcessName = ParseConfigValue("process", typeof(string), ProcessName);
+                StartProcess = ParseConfigValue("open", typeof(string), StartProcess);
+                IsWindowsApp = ParseConfigValue("win", typeof(bool), IsWindowsApp);
+                InjectionDelay = ParseConfigValue("delay", typeof(int), InjectionDelay);
+                InjectLoopDelay = ParseConfigValue("dll_delay", typeof(int), InjectLoopDelay);
+                Timeout = ParseConfigValue("timeout", typeof(int), Timeout);
+                Quiet = ParseConfigValue("quiet", typeof(bool), Quiet);
+                Dlls = ParseConfigValue("dlls", typeof(List<>), Dlls);
             }
         }
 
         public FileInfo Dll(string key) {
             string filePath = null;
-            if (this.Config != null) {
-                filePath = this.Config.GetKey($"DLL.{key}")?.Trim();
+            if (Config != null) {
+                filePath = Config.GetKey($"DLL.{key}")?.Trim();
             }
 
             return new FileInfo(string.IsNullOrEmpty(filePath) ? key : filePath);
         }
 
         public void Validate() {
-            if (this.InjectionDelay < 0) {
+            if (InjectionDelay < 0) {
                 Program.HandleError("-d/--delay cannot be negative");
             }
 
-            if (this.InjectLoopDelay < 0) {
+            if (InjectLoopDelay < 0) {
                 Program.HandleError("-i/--multi-dll-delay cannot be negative");
             }
 
-            if (this.Timeout < 0) {
+            if (Timeout < 0) {
                 Program.HandleError("-t/--timeout cannot be negative");
             }
 
-            if (this.InjectionDelay == 0) {
+            if (InjectionDelay == 0) {
                 logger.Warn("No delay specified before attempting to inject. This could cause it to crash");
             }
 
-            if (this.InjectLoopDelay == 0) {
+            if (InjectLoopDelay == 0) {
                 logger.Warn("No delay between injecting multiple delays. This could cause it to crash");
             }
         }
