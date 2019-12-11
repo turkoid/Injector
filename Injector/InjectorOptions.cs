@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using CommandLine;
 using IniParser;
 using IniParser.Model;
@@ -32,10 +33,6 @@ namespace Injector {
             HelpText = "How long to wait, in seconds, when finding process by name")]
         public int Timeout { get; set; }
 
-        [Value(0, MetaName = "DLLs",
-            HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order")]
-        public IEnumerable<string> Dlls { get; set; }
-
         [Option('c', "config", HelpText = "Path to config file to use")]
         public string ConfigFile { get; set; }
 
@@ -44,6 +41,9 @@ namespace Injector {
 
         [Option('i', "interactive", Default = false, HelpText = "Whether to wait for user input")]
         public bool Interactive { get; set; }
+
+        [Option('l', "dlls", HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order")]
+        public IEnumerable<string> Dlls { get; set; }
 
         private IniData _Config { get; set; }
 
@@ -64,6 +64,11 @@ namespace Injector {
                 logger.Debug($"Using config value for {key}");
                 value = value.Trim();
                 value = value == "" ? null : value;
+                if (type == typeof(List<>)) {
+                    List<string> values = value.Split(' ').ToList();
+                    return values;
+                }
+
                 return Convert.ChangeType(value, type);
             }
 
@@ -81,6 +86,7 @@ namespace Injector {
                 this.InjectLoopDelay = ParseConfigValue("dll_delay", typeof(int), this.InjectLoopDelay);
                 this.Timeout = ParseConfigValue("timeout", typeof(int), this.Timeout);
                 this.Quiet = ParseConfigValue("quiet", typeof(bool), this.Quiet);
+                this.Dlls = ParseConfigValue("dlls", typeof(List<>), this.Dlls);
             }
         }
 
