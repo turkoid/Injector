@@ -120,6 +120,10 @@ namespace Injector {
             if (InjectLoopDelay == 0) {
                 logger.Warn("No delay between injecting multiple delays. This could cause it to crash");
             }
+
+            if (Dlls.Count() == 0) {
+                Program.HandleError("No DLLs to inject");
+            }
         }
 
         public void Log() {
