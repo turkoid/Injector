@@ -60,6 +60,7 @@ namespace Injector {
             this.opts = opts;
             opts.UpdateFromFile();
             opts.Validate();
+            opts.Log();
         }
 
         public void Inject() {

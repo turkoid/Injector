@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using CommandLine;
 using IniParser;
 using IniParser.Model;
@@ -119,6 +120,22 @@ namespace Injector {
             if (InjectLoopDelay == 0) {
                 logger.Warn("No delay between injecting multiple delays. This could cause it to crash");
             }
+        }
+
+        public void Log() {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Injector Options:");
+            sb.AppendLine($"pid={ProcessId}");
+            sb.AppendLine($"process={ProcessName}");
+            sb.AppendLine($"start={StartProcess}");
+            sb.AppendLine($"win={IsWindowsApp}");
+            sb.AppendLine($"delay={InjectionDelay}");
+            sb.AppendLine($"multi-dll-delay={InjectLoopDelay}");
+            sb.AppendLine($"timeout={Timeout}");
+            sb.AppendLine($"quiet={Quiet}");
+            sb.AppendLine($"interactive={Interactive}");
+            sb.AppendLine($"dlls={string.Join(' ', Dlls)}");
+            logger.Debug(sb.ToString());
         }
     }
 }

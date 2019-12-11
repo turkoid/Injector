@@ -73,6 +73,7 @@ You can specify easy to use keys instead of the the full paths to the DLLs when 
 ## Troubleshooting
 
 **It keeps crashing!**
+
 It could you need to adjust delays. Try and use the injector after starting the program manually and waiting till you feel the program is in a state that it has fully initialized (Note: the injector is smart enough to not start the process, if specified, when it's already running).
 
 If the injector works, then the delays. The most effective one is `--delay`
@@ -81,6 +82,7 @@ If the injector doesn't not work, sometimes it helps to adjust the order of the 
 Unfortunately, if the injection still fails, but works with other injection utilities, then open an issue and I'll try and take a look at it.
 
 **I specified a Microsoft store app, but it doesn't start**
+
 Make sure the use the format specified above and make sure to use the `win` option.
 
 
