@@ -13,11 +13,15 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 ## Commandline Options
 
   All options are optional except otherwise specified. 
-  
+
   * `-p | --pid` 
+
   The process id of the process to inject into. `process` and `open` are ignored if this is used
+
   * `-x | --process` 
+
   The process name of the process to inject into. Alternatively, can be the name of the true process after using `--start`
+  
   * `-s | --start` 
   The path to process to start. Supports Microsoft store apps (see below)
   * `-w | --win` 
