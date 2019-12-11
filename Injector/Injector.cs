@@ -59,6 +59,7 @@ namespace Injector {
         public Injector(InjectorOptions opts) {
             this.opts = opts;
             opts.UpdateFromFile();
+            opts.Validate();
         }
 
         public void Inject() {
@@ -197,7 +198,7 @@ namespace Injector {
 
         private Process FindProcessByName(string name) {
             name = Path.GetFileNameWithoutExtension(name);
-            logger.Debug($"Finding processes matching {name}");
+            logger.Debug($"Finding processes matching '{name}'");
             Process[] processes = Process.GetProcessesByName(name);
             if (processes.Length == 1) {
                 logger.Debug("Found one match!");
@@ -215,7 +216,7 @@ namespace Injector {
             Process process = null;
             timeout *= 1000;
             int polling_rate = 500;
-            logger.Debug($"Waiting for process {name}");
+            logger.Debug($"Waiting for process '{name}'");
             while (timeout > 0) {
                 process = FindProcessByName(name);
                 if (process != null) {
