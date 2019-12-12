@@ -357,6 +357,8 @@ MigrationBackup/
 
 # User-specific files
 launchSettings.json
+debug-configs/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 
 # Mono auto generated files
