@@ -10,13 +10,13 @@ using IniParser.Model;
 
 namespace Injector {
     public class InjectorOptions {
-        public const int DEFAULT_INJECTION_DELAY = 5000;
-        public const int DEFAULT_INJECTION_LOOP_DELAY = 1000;
-        public const int DEFAULT_TIMEOUT = 10000;
+        public const uint DEFAULT_INJECTION_DELAY = 5000;
+        public const uint DEFAULT_INJECTION_LOOP_DELAY = 1000;
+        public const uint DEFAULT_TIMEOUT = 10000;
         private static readonly Logger logger = Logger.Instance();
 
         [Option('p', "pid", HelpText = "The process id of the process to inject into")]
-        public int? ProcessId { get; set; }
+        public uint? ProcessId { get; set; }
 
         [Option('x', "process", HelpText = "The process name of the process to inject into")]
         public string ProcessName { get; set; }
@@ -28,15 +28,15 @@ namespace Injector {
         public bool IsWindowsApp { get; set; }
 
         [Option('d', "delay", Default = DEFAULT_INJECTION_DELAY, HelpText = "Delay(ms) after starting process to start injection")]
-        public int InjectionDelay { get; set; }
+        public uint InjectionDelay { get; set; }
 
         [Option('m', "multi-dll-delay", Default = DEFAULT_INJECTION_LOOP_DELAY,
             HelpText = "Delay(ms) between injecting multiple DLLs")]
-        public int InjectLoopDelay { get; set; }
+        public uint InjectLoopDelay { get; set; }
 
         [Option('t', "timeout", Default = DEFAULT_TIMEOUT,
             HelpText = "Timeout(ms) when finding process by name")]
-        public int Timeout { get; set; }
+        public uint Timeout { get; set; }
 
         [Option('c', "config", HelpText = "Path to config file to use")]
         public string ConfigFile { get; set; }
@@ -140,18 +140,6 @@ namespace Injector {
         }
 
         public void Validate() {
-            if (InjectionDelay < 0) {
-                Program.HandleError("'delay' cannot be negative");
-            }
-
-            if (InjectLoopDelay < 0) {
-                Program.HandleError("'multi-dll-delay' cannot be negative");
-            }
-
-            if (Timeout < 0) {
-                Program.HandleError("'timeout' cannot be negative");
-            }
-
             if (InjectionDelay == 0) {
                 logger.Warn("No delay specified before attempting to inject. The process could crash");
             }

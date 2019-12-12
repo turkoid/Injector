@@ -63,10 +63,10 @@ namespace Injector {
             Process process = null;
             if (opts.ProcessId != null) {
                 // find process by pid
-                int pid = opts.ProcessId.Value;
+                uint pid = opts.ProcessId.Value;
                 try {
                     logger.Info("Attempting to find running process by id...");
-                    process = Process.GetProcessById(opts.ProcessId.Value);
+                    process = Process.GetProcessById((int)opts.ProcessId.Value);
                 } catch (ArgumentException) {
                     Program.HandleError($"Could not find process id {pid}");
                 }
@@ -110,7 +110,7 @@ namespace Injector {
             } else if (opts.InjectionDelay > 0) {
                 logger.Info(
                     $"Delaying injection by {opts.InjectionDelay} second(s) to allow the process to initialize fully");
-                Thread.Sleep(opts.InjectionDelay);
+                Thread.Sleep((int)opts.InjectionDelay);
             }
 
             if (process.WaitForInputIdle()) {
@@ -134,7 +134,7 @@ namespace Injector {
             }
         }
 
-        private void InjectIntoProcess(Process process, FileInfo[] dlls, int delay = InjectorOptions.DEFAULT_INJECTION_LOOP_DELAY) {
+        private void InjectIntoProcess(Process process, FileInfo[] dlls, uint delay = InjectorOptions.DEFAULT_INJECTION_LOOP_DELAY) {
             logger.Debug("Opening handle to process");
             IntPtr procHandle = OpenProcess(OPEN_PROCESS, false, process.Id);
             if (procHandle == IntPtr.Zero) {
@@ -187,7 +187,7 @@ namespace Injector {
                         logger.Debug("No delay between next DLL injection");
                     } else {
                         logger.Debug($"Delaying next DLL injection by {delay} ms");
-                        Thread.Sleep(delay);
+                        Thread.Sleep((int)delay);
                     }
                 }
 
@@ -216,23 +216,25 @@ namespace Injector {
             return null;
         }
 
-        private Process WaitForProcess(string name, int timeout = InjectorOptions.DEFAULT_TIMEOUT) {
+        private Process WaitForProcess(string name, uint timeout = InjectorOptions.DEFAULT_TIMEOUT) {
             Process process = null;
+            int timeout_counter = (int)timeout;
             int polling_rate = 500;
+
             logger.Debug($"Waiting for process '{name}'");
-            while (timeout > 0) {
+            while (timeout_counter > 0) {
                 process = FindProcessByName(name);
                 if (process != null) {
                     logger.Debug("Process found!");
                     break;
                 }
 
-                timeout -= polling_rate;
+                timeout_counter -= polling_rate;
                 Thread.Sleep(polling_rate);
             }
 
             if (process == null) {
-                Program.HandleError($"Timed out waiting for {name}");
+                Program.HandleError($"Timed out waiting for process '{name}'");
             }
 
             return process;
