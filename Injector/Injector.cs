@@ -31,8 +31,6 @@ namespace Injector {
             this.opts = opts;
         }
 
-        se
-
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
