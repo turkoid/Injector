@@ -138,17 +138,17 @@ namespace Injector {
         public void Log() {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Injector Options:");
-            sb.AppendLine($"pid={ProcessId}");
-            sb.AppendLine($"process={ProcessName}");
-            sb.AppendLine($"start={StartProcess}");
-            sb.AppendLine($"win={IsWindowsApp}");
-            sb.AppendLine($"delay={InjectionDelay}");
-            sb.AppendLine($"multi-dll-delay={InjectLoopDelay}");
-            sb.AppendLine($"timeout={Timeout}");
-            sb.AppendLine($"quiet={Quiet}");
-            sb.AppendLine($"interactive={Interactive}");
-            sb.AppendLine($"verbose={Verbose}");
-            sb.AppendLine($"dlls={string.Join(' ', Dlls)}");
+            sb.AppendLine($"  pid={ProcessId}");
+            sb.AppendLine($"  process={ProcessName}");
+            sb.AppendLine($"  start={StartProcess}");
+            sb.AppendLine($"  win={IsWindowsApp}");
+            sb.AppendLine($"  delay={InjectionDelay}");
+            sb.AppendLine($"  multi-dll-delay={InjectLoopDelay}");
+            sb.AppendLine($"  timeout={Timeout}");
+            sb.AppendLine($"  quiet={Quiet}");
+            sb.AppendLine($"  interactive={Interactive}");
+            sb.AppendLine($"  verbose={Verbose}");
+            sb.AppendLine($"  dlls={string.Join(' ', Dlls)}");
             logger.Debug(sb.ToString());
         }
 

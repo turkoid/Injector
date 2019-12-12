@@ -14,12 +14,18 @@ namespace Injector {
                 Parser.Default.ParseArguments<InjectorOptions>(args)
                     .WithParsed(opts => {
                         Options = opts;
+                        logger.Debug($"args: {string.Join(' ', args)}");
+                        opts.UpdateFromFile();
+                        opts.Log();
+                        opts.Validate();
+
                         Injector injector = new Injector(opts);
                         injector.Inject();
                     });
             } catch (Exception ex) {
                 HandleException("An unknown error occurred. See log for details", ex);
             }
+
             WaitForUserInput();
         }
 
@@ -35,6 +41,7 @@ namespace Injector {
             if (!string.IsNullOrEmpty(debugMessage)) {
                 logger.Debug(debugMessage);
             }
+
             WaitForUserInput();
             logger.Debug("Exiting...");
             Environment.Exit(1);

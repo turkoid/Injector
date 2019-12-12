@@ -8,8 +8,6 @@ using System.Threading;
 
 namespace Injector {
     class Injector {
-        private static Logger logger = Logger.Instance();
-
         const int PROCESS_CREATE_THREAD = 0x0002;
         const int PROCESS_QUERY_INFORMATION = 0x0400;
         const int PROCESS_VM_OPERATION = 0x0008;
@@ -25,6 +23,13 @@ namespace Injector {
                                  PROCESS_VM_WRITE | PROCESS_VM_READ;
 
         const uint MEM_CREATE = MEM_COMMIT | MEM_RESERVE;
+        private static readonly Logger logger = Logger.Instance();
+
+        private readonly InjectorOptions opts;
+
+        public Injector(InjectorOptions opts) {
+            this.opts = opts;
+        }
 
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -54,22 +59,13 @@ namespace Injector {
             IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter,
             uint dwCreationFlags, IntPtr lpThreadId);
 
-        private InjectorOptions opts;
-
-        public Injector(InjectorOptions opts) {
-            this.opts = opts;
-            opts.UpdateFromFile();
-            opts.Validate();
-            opts.Log();
-        }
-
         public void Inject() {
             Process process = null;
             if (opts.ProcessId != null) {
                 // find process by pid
                 int pid = opts.ProcessId.Value;
                 try {
-                    logger.Info($"Attempting to find running process by id...");
+                    logger.Info("Attempting to find running process by id...");
                     process = Process.GetProcessById(opts.ProcessId.Value);
                 } catch (ArgumentException) {
                     Program.HandleError($"Could not find process id {pid}");
@@ -101,7 +97,7 @@ namespace Injector {
                     logger.Info("Process already started.");
                 }
             } else if (opts.ProcessName != null) {
-                logger.Info($"Attempting to find running process by name...");
+                logger.Info("Attempting to find running process by name...");
                 process = WaitForProcess(opts.ProcessName, opts.Timeout);
             }
 
