@@ -52,7 +52,7 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
     If passed, then program will pause before exiting, including errors (Default: `false`)
 
-  * `-l | --dlls`
+  * `DLLS (pos. 0)`
 
     One or more dlls to inject into the process, separated by space. Full paths can be used or config keys (see below)
 
@@ -80,11 +80,11 @@ multi-dll-delay=1
 timeout=3
 quiet=false
 interactive=false
-dlls=some_key another_key path/to/dll
+dlls=some_key another_key path\to\dll
 
 [DLL]
-some_key=path/to/dll
-another_key=path/to/dll
+some_key=path\to\dll
+another_key=path\to\another\dll
 ```
 
 You can specify easy to use keys instead of the the full paths to the DLLs when using the command line or config file.  You can mix keys and paths, as well.
