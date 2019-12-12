@@ -105,7 +105,9 @@ namespace Injector {
                 Program.HandleError("No process to inject.");
             }
 
-            if (opts.InjectionDelay > 0) {
+            if (opts.StartProcess != null) {
+                logger.Debug("Not delaying before injection. Process already started.");
+            } else if (opts.InjectionDelay > 0) {
                 logger.Info(
                     $"Delaying injection by {opts.InjectionDelay} second(s) to allow the process to initialize fully");
                 Thread.Sleep(opts.InjectionDelay * 1000);
@@ -180,7 +182,7 @@ namespace Injector {
                     VirtualFreeEx(procHandle, allocMemAddress, UIntPtr.Zero, MEM_RELEASE);
                 }
 
-                if (dllIndex < dlls.Length) {
+                if (delay > 0 && dllIndex < dlls.Length) {
                     Thread.Sleep(delay);
                 }
 
