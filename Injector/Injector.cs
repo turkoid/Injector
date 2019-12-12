@@ -31,6 +31,8 @@ namespace Injector {
             this.opts = opts;
         }
 
+        se
+
         [DllImport("kernel32.dll", SetLastError = true)]
         static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
 
@@ -109,7 +111,7 @@ namespace Injector {
                 logger.Debug("Not delaying before injection. Process already started.");
             } else if (opts.InjectionDelay > 0) {
                 logger.Info(
-                    $"Delaying injection by {opts.InjectionDelay} second(s) to allow the process to initialize fully");
+                    $"Delaying injection by {opts.InjectionDelay}ms to allow the process to initialize fully");
                 Thread.Sleep((int)opts.InjectionDelay);
             }
 
@@ -213,6 +215,7 @@ namespace Injector {
                 Program.HandleError($"Too many processes matching {name}");
             }
 
+            logger.Debug("No process found matching the supplied name");
             return null;
         }
 
