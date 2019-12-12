@@ -1,4 +1,5 @@
 version: 1.0.{build}
+skip_tags: true
 image: Visual Studio 2019
 install:
   - sh: https://dotnetwebsite.azurewebsites.net/download/dotnet-core/scripts/v1/dotnet-install.sh --version 3.1.100
