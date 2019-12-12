@@ -30,15 +30,15 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
   * `-d | --delay`
 
-    Specifies the delay, in milliseconds, after the process has started before the injection process starts (Default: `5`)
+    Specifies the delay, in milliseconds, after the process has started before the injection process starts (Default: `5000`)
 
   * `-m | --multi-dll-delay`
 
-    Specifies the delay, in milliseconds, betweeen injecting multiple delays (Default: `1`)
+    Specifies the delay, in milliseconds, betweeen injecting multiple delays (Default: `1000`)
 
   * `-t | --timeout`
 
-    Specifies the timeout, in milliseconds, when attempting to find the process by name (Default: `10`)
+    Specifies the timeout, in milliseconds, when attempting to find the process by name (Default: `10000`)
 
   * `-c | --config`
 
