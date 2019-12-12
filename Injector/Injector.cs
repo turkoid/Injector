@@ -110,7 +110,7 @@ namespace Injector {
             } else if (opts.InjectionDelay > 0) {
                 logger.Info(
                     $"Delaying injection by {opts.InjectionDelay} second(s) to allow the process to initialize fully");
-                Thread.Sleep(opts.InjectionDelay * 1000);
+                Thread.Sleep(opts.InjectionDelay);
             }
 
             if (process.WaitForInputIdle()) {
@@ -125,7 +125,7 @@ namespace Injector {
                 }
 
                 logger.Info($"Injecting {dlls.Count} DLL(s) into {process.ProcessName} ({process.Id})");
-                InjectIntoProcess(process, dlls.ToArray(), opts.InjectLoopDelay * 1000);
+                InjectIntoProcess(process, dlls.ToArray(), opts.InjectLoopDelay);
 
                 if (process.HasExited) {
                     Program.HandleError(
@@ -216,9 +216,8 @@ namespace Injector {
             return null;
         }
 
-        private Process WaitForProcess(string name, int timeout = 10) {
+        private Process WaitForProcess(string name, int timeout = 10000) {
             Process process = null;
-            timeout *= 1000;
             int polling_rate = 500;
             logger.Debug($"Waiting for process '{name}'");
             while (timeout > 0) {

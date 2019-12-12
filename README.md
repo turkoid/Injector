@@ -30,15 +30,15 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
   * `-d | --delay`
 
-    Specifies the delay, in seconds, after the process has started before the injection process starts (Default: `5`)
+    Specifies the delay, in milliseconds, after the process has started before the injection process starts (Default: `5`)
 
   * `-m | --multi-dll-delay`
 
-    Specifies the delay, in seconds, betweeen injecting multiple delays (Default: `1`)
+    Specifies the delay, in milliseconds, betweeen injecting multiple delays (Default: `1`)
 
   * `-t | --timeout`
 
-    Specifies the timeout, in seconds, when attempting to find the process by name (Default: `10`)
+    Specifies the timeout, in milliseconds, when attempting to find the process by name (Default: `10`)
 
   * `-c | --config`
 
@@ -84,6 +84,7 @@ multi-dll-delay=1
 timeout=3
 quiet=false
 interactive=false
+verbose=false
 dlls=some_key another_key path\to\dll
 
 [DLL]
@@ -99,7 +100,7 @@ You can specify easy to use keys instead of the the full paths to the DLLs when 
 
 You might need to adjust delays. Try and use the injector after starting the program manually and waiting till you feel the program is in a state that it has fully initialized (The injector is smart enough to not start the process, if specified, when it's already running).
 
-If the injector works, then adjust the delays. The most effective one is `--delay`
+If the injector works, then adjust the delays. The most effective one is `delay`
 
 If the injector doesn't work, sometimes it helps to adjust the order of the injection, if using more than one dll.
 

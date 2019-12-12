@@ -24,15 +24,15 @@ namespace Injector {
         [Option('w', "win", Default = false, HelpText = "Indicates the process to start is a windows app")]
         public bool IsWindowsApp { get; set; }
 
-        [Option('d', "delay", Default = 5, HelpText = "Delay, in seconds, after starting process to start injection")]
+        [Option('d', "delay", Default = 5, HelpText = "Delay(ms) after starting process to start injection")]
         public int InjectionDelay { get; set; }
 
         [Option('m', "multi-dll-delay", Default = 1,
-            HelpText = "Delay, in seconds, between injecting multiple DLLs")]
+            HelpText = "Delay(ms) between injecting multiple DLLs")]
         public int InjectLoopDelay { get; set; }
 
         [Option('t', "timeout", Default = 10,
-            HelpText = "Timeout, in seconds, when finding process by name")]
+            HelpText = "Timeout(ms) when finding process by name")]
         public int Timeout { get; set; }
 
         [Option('c', "config", HelpText = "Path to config file to use")]
