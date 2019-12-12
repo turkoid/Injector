@@ -134,7 +134,7 @@ namespace Injector {
             }
         }
 
-        private void InjectIntoProcess(Process process, FileInfo[] dlls, int delay = 3000) {
+        private void InjectIntoProcess(Process process, FileInfo[] dlls, int delay = InjectorOptions.DEFAULT_INJECTION_LOOP_DELAY) {
             logger.Debug("Opening handle to process");
             IntPtr procHandle = OpenProcess(OPEN_PROCESS, false, process.Id);
             if (procHandle == IntPtr.Zero) {
@@ -216,7 +216,7 @@ namespace Injector {
             return null;
         }
 
-        private Process WaitForProcess(string name, int timeout = 10000) {
+        private Process WaitForProcess(string name, int timeout = InjectorOptions.DEFAULT_TIMEOUT) {
             Process process = null;
             int polling_rate = 500;
             logger.Debug($"Waiting for process '{name}'");

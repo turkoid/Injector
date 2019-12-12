@@ -10,6 +10,9 @@ using IniParser.Model;
 
 namespace Injector {
     public class InjectorOptions {
+        public const int DEFAULT_INJECTION_DELAY = 5000;
+        public const int DEFAULT_INJECTION_LOOP_DELAY = 1000;
+        public const int DEFAULT_TIMEOUT = 10000;
         private static readonly Logger logger = Logger.Instance();
 
         [Option('p', "pid", HelpText = "The process id of the process to inject into")]
@@ -24,14 +27,14 @@ namespace Injector {
         [Option('w', "win", Default = false, HelpText = "Indicates the process to start is a windows app")]
         public bool IsWindowsApp { get; set; }
 
-        [Option('d', "delay", Default = 5000, HelpText = "Delay(ms) after starting process to start injection")]
+        [Option('d', "delay", Default = DEFAULT_INJECTION_DELAY, HelpText = "Delay(ms) after starting process to start injection")]
         public int InjectionDelay { get; set; }
 
-        [Option('m', "multi-dll-delay", Default = 1000,
+        [Option('m', "multi-dll-delay", Default = DEFAULT_INJECTION_LOOP_DELAY,
             HelpText = "Delay(ms) between injecting multiple DLLs")]
         public int InjectLoopDelay { get; set; }
 
-        [Option('t', "timeout", Default = 10000,
+        [Option('t', "timeout", Default = DEFAULT_TIMEOUT,
             HelpText = "Timeout(ms) when finding process by name")]
         public int Timeout { get; set; }
 
