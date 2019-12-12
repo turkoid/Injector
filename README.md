@@ -1,6 +1,12 @@
 # Injector
 
+[![Build status](https://ci.appveyor.com/api/projects/status/ovg6mouwm3p4d51e?svg=true)](https://ci.appveyor.com/project/turkoid/injector)
+
 Commandline tool that injects one or more DLLs into a process. Optionally also starts that process before injecting.
+
+## Download
+
+Download latest release [here](releases/latest)
 
 ## Features
 
