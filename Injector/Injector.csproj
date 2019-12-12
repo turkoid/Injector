@@ -6,11 +6,23 @@
     <StartupObject>Injector.Program</StartupObject>
     <ApplicationIcon></ApplicationIcon>
     <Win32Resource />
+    <AssemblyName>Injector</AssemblyName>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/turkoid/Injector</RepositoryUrl>
+    <Description>Inject dlls into processes</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
     <PackageReference Include="ini-parser" Version="2.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
