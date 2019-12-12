@@ -1,0 +1,12 @@
+version: 1.0.{build}
+image: Visual Studio 2019
+configuration: Release
+platform: x64
+install:
+  - sh: https://dotnetwebsite.azurewebsites.net/download/dotnet-core/scripts/v1/dotnet-install.sh --version 3.1.100
+build_script:
+  - sh: dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true
+after_build:
+  - cmd: 7z a injector-%APPVEYOR_BUILD_VERSION%-win64.zip .\LICENSE .\README.md .\CHANGELOG.md .\Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
+artifacts:
+  - path: injector-%APPVEYOR_BUILD_VERSION%-win64.zip
