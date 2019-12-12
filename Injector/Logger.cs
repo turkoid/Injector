@@ -20,7 +20,7 @@ namespace Injector {
         private void InternalLog(LoggingLevel level, string message, bool quiet = false, bool append = true) {
             if (level == LoggingLevel.ERROR) {
                 Console.Error.WriteLine(message);
-            } else if (!quiet && level != LoggingLevel.DEBUG) {
+            } else if ((Program.Options?.Verbose ?? false) || !quiet && level != LoggingLevel.DEBUG) {
                 Console.WriteLine(message);
             }
 
