@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Injector": {
-      "commandName": "Project",
-      "commandLineArgs": "-c \"C:\\home\\apps\\dll-injector\\injector-epic.ini\" console"
-    }
-  }
-}
