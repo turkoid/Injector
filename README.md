@@ -52,6 +52,10 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
     If passed, then program will pause before exiting, including errors (Default: `false`)
 
+  * `-v | --verbose`
+    
+    If passed, then all messages, including debug messages, will be printed to the console (Default: `false`)
+
   * `DLLS (pos. 0)`
 
     One or more dlls to inject into the process, separated by space. Full paths can be used or config keys (see below)
