@@ -54,10 +54,19 @@ namespace Injector {
 
         public IniData Config {
             get {
-                if (_Config == null && ConfigFile != null) {
+                if (_Config == null && !string.IsNullOrWhiteSpace(ConfigFile)) {
                     var parser = new FileIniDataParser();
-                    logger.Debug($"Reading from config file {ConfigFile}");
-                    _Config = parser.ReadFile(ConfigFile);
+                    FileInfo configFileInfo = new FileInfo(ConfigFile);
+                    logger.Info($"Reading from config file: {ConfigFile}");
+                    if (!File.Exists(configFileInfo.FullName)) {
+                        Program.HandleError($"Config file not found: {configFileInfo.FullName}");
+                    }
+
+                    try {
+                        _Config = parser.ReadFile(ConfigFile);
+                    } catch (Exception ex) {
+                        Program.HandleException("There was an issue parsing the config file!", ex);
+                    }
                 }
 
                 return _Config;
