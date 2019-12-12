@@ -130,7 +130,7 @@ namespace Injector {
                 Program.HandleError("'quiet' and 'verbose' cannot be combined");
             }
 
-            if (Dlls.Count() == 0) {
+            if ((Dlls?.Count() ?? 0) == 0) {
                 Program.HandleError("No DLLs to inject");
             }
         }
