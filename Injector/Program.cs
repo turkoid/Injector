@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using CommandLine;
+using CommandLine.Text;
 
 namespace Injector {
     class Program {
         private static readonly Logger logger = Logger.Instance();
+        private static ParserResult<InjectorOptions> parserResult;
         public static InjectorOptions Options { get; set; }
 
         static void Main(string[] args) {
             // dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true
             try {
-                Parser.Default.ParseArguments<InjectorOptions>(args)
+                var parser = new Parser(with => with.HelpWriter = null);
+                parserResult = parser.ParseArguments<InjectorOptions>(args);
+                parserResult
                     .WithParsed(opts => {
                         Options = opts;
                         logger.Debug($"args: {string.Join(' ', args)}");
@@ -21,12 +26,32 @@ namespace Injector {
 
                         Injector injector = new Injector(opts);
                         injector.Inject();
-                    });
+                    })
+                    .WithNotParsed(errs => DisplayHelp(parserResult, errs));
             } catch (Exception ex) {
                 HandleException("An unknown error occurred. See log for details", ex);
             }
 
             WaitForUserInput();
+        }
+
+        public static void DisplayHelp(ParserResult<InjectorOptions> result, IEnumerable<Error> errs) {
+            HelpText helpText = null;
+            if (errs.IsVersion()) {
+                helpText = HelpText.AutoBuild(result);
+            } else {
+                helpText = HelpText.AutoBuild(result, help => {
+                    help.AdditionalNewLineAfterOption = false;
+                    help.Copyright = "";
+                    return HelpText.DefaultParsingErrorsHandler(result, help);
+                }, e => e);
+            }
+
+            if (errs.IsVersion() || errs.IsHelp()) {
+                Console.WriteLine(helpText);
+            } else {
+                Console.Error.WriteLine(helpText);
+            }
         }
 
         public static void WaitForUserInput() {
