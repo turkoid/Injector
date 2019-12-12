@@ -356,7 +356,7 @@ MigrationBackup/
 ### VisualStudio ###
 
 # User-specific files
-
+launchSettings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 
 # Mono auto generated files

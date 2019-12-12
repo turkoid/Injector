@@ -2,7 +2,7 @@
   "profiles": {
     "Injector": {
       "commandName": "Project",
-      "commandLineArgs": "-c \"C:\\Users\\turkoid\\Desktop\\injector.ini\" supernova"
+      "commandLineArgs": "-c \"C:\\home\\apps\\dll-injector\\injector-epic.ini\" console"
     }
   }
 }
