@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CommandLine;
+using CommandLine.Text;
 using IniParser;
 using IniParser.Model;
 
@@ -49,6 +50,27 @@ namespace Injector {
         [Value(0, MetaName = "DLLs",
             HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order. Use 'dlls' for the config file")]
         public IEnumerable<string> Dlls { get; set; }
+
+        [Usage(ApplicationAlias = "injector")]
+        public static IEnumerable<Example> Examples {
+            get {
+                UnParserSettings shortOptions = new UnParserSettings();
+                shortOptions.PreferShortName = true;
+                return new List<Example> {
+                    new Example("Inject a dll into a process matching pid", new InjectorOptions {ProcessId = 1234, Dlls = new List<string> {"path\\to\\some.dll"}}),
+                    new Example("Start a process and inject multiple DLLs", shortOptions,
+                        new InjectorOptions {StartProcess = "process.exe", Dlls = new List<string> {"path\\to\\some.dll", "path\\to\\another.dll"}}),
+                    new Example("Start a Microsoft store app and use config file keys for the DLLs", shortOptions,
+                        new InjectorOptions {
+                            StartProcess = "Microsoft!App",
+                            IsWindowsApp = true,
+                            ProcessName = "process.exe",
+                            ConfigFile = "config.ini",
+                            Dlls = new List<string> {"key1", "key2"}
+                        })
+                };
+            }
+        }
 
         private IniData _Config { get; set; }
 
