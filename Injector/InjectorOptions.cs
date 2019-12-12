@@ -17,21 +17,21 @@ namespace Injector {
         [Option('x', "process", HelpText = "The process name of the process to inject into")]
         public string ProcessName { get; set; }
 
-        [Option('s', "start", HelpText = "Path to process to start")]
+        [Option('s', "start", HelpText = "Path to the process to start")]
         public string StartProcess { get; set; }
 
-        [Option('w', "win", Default = false, HelpText = "Indicates the process to open is a windows app")]
+        [Option('w', "win", Default = false, HelpText = "Indicates the process to start is a windows app")]
         public bool IsWindowsApp { get; set; }
 
-        [Option('d', "delay", Default = 5, HelpText = "How long to wait, in seconds, before injecting")]
+        [Option('d', "delay", Default = 5, HelpText = "Delay, in seconds, after starting process to start injection")]
         public int InjectionDelay { get; set; }
 
         [Option('m', "multi-dll-delay", Default = 1,
-            HelpText = "How long to wait, in seconds, between injecting multiple DLLs")]
+            HelpText = "Delay, in seconds, between injecting multiple DLLs")]
         public int InjectLoopDelay { get; set; }
 
         [Option('t', "timeout", Default = 10,
-            HelpText = "How long to wait, in seconds, when finding process by name")]
+            HelpText = "Timeout, in seconds, when finding process by name")]
         public int Timeout { get; set; }
 
         [Option('c', "config", HelpText = "Path to config file to use")]
