@@ -73,7 +73,7 @@ To start a Microsoft Store App, you need to use a specific format. Follow the in
 
 Use the `PackageFamilyName!Applicationid`. Don't include the `explorer.exe shell:appsFolder\`. So from the article, you would pass `Microsoft.BingWeather_8wekyb3d8bbwe!App`.
 
-**Note**: Don't forgot to specify the process is a Microsoft store app by using `-w | --win` or `win=true` in the config file
+The tool is smart enough to detect if you are you are trying to start a Microsoft app by detecting an exclamation point. So passing `-w | --win` or `win=true` in the config file, is not necessary. However, if for some reason you had a file named exactly like the store in the injector's working directory, then you would need to specicy the command line option.
 
 ## Config File
 

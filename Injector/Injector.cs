@@ -77,10 +77,18 @@ namespace Injector {
                     : opts.ProcessName);
                 if (process == null) {
                     // starts a process
+                    if (!File.Exists(opts.StartProcess)) {
+                        if (opts.StartProcess.Contains('!')) {
+                            logger.Debug("Could not find the process to start, but it could be a Microsoft store app");
+                            opts.IsWindowsApp = true;
+                        } else {
+                            Program.HandleError($"{opts.StartProcess} not found. Ensure the path is correct");
+                        }
+                    }
                     string app = opts.StartProcess;
                     string app_args = "";
                     if (opts.IsWindowsApp) {
-                        logger.Debug("Process to start is a microsoft store app");
+                        logger.Debug("Process to start is a Microsoft store app");
                         app = "explorer.exe";
                         app_args = $"shell:AppsFolder\\{opts.StartProcess}";
                     }
