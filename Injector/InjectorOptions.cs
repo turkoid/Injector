@@ -7,7 +7,6 @@ using CommandLine;
 using CommandLine.Text;
 using IniParser;
 using IniParser.Model;
-using Microsoft.VisualBasic;
 
 namespace Injector {
     public class InjectorOptions {

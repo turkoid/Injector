@@ -105,6 +105,16 @@ namespace Injector {
                         logger.Debug("Waiting for real process to start...");
                         process = WaitForProcess(opts.ProcessName, opts.Timeout);
                     }
+
+                    if (opts.ProcessRestarts) {
+                        logger.Debug("Waiting for original process to exit");
+                        if (process.WaitForExit((int) opts.Timeout)) { 
+                            logger.Debug("Waiting for process to restart with new pid");
+                            process = WaitForProcess(opts.ProcessName, opts.Timeout);
+                        } else {
+                            logger.Debug("Process did not exit. Continuing with injection since the process may have exited before checking");
+                        }
+                    }
                 } else {
                     logger.Info("Process already started.");
                 }
@@ -113,8 +123,7 @@ namespace Injector {
                 process = WaitForProcess(opts.ProcessName, opts.Timeout);
             }
 
-            if (process == null) {
-                Program.HandleError("No process to inject.");
+            if (process == null) {''
             }
 
             if (opts.StartProcess == null) {
