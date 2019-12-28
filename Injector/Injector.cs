@@ -123,7 +123,8 @@ namespace Injector {
                 process = WaitForProcess(opts.ProcessName, opts.Timeout);
             }
 
-            if (process == null) {''
+            if (process == null) {
+                Program.HandleError("No process to inject.");
             }
 
             if (opts.StartProcess == null) {
