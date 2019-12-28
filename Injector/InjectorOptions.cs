@@ -108,13 +108,14 @@ namespace Injector {
             if (Config.TryGetKey($"Config.{key}", out string value)) {
                 logger.Debug($"Using config value for {key}");
                 value = value.Trim();
-                if (type == typeof(List<>)) {
-                    List<string> values = value.Split(' ').ToList();
-                    return values;
-                }
+                if (!value.Equals("")) {
+                    if (type == typeof(List<>)) {
+                        List<string> values = value.Split(' ').ToList();
+                        return values;
+                    }
 
-                value = value == "" ? null : value;
-                return Convert.ChangeType(value, type);
+                    return Convert.ChangeType(value, type);
+                }
             }
 
             return defaultValue;
