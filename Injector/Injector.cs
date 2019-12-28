@@ -197,6 +197,11 @@ namespace Injector {
                     Program.HandleWin32Error("Unable to create a remote thread in the process. Failed to inject the dll");
                 }
 
+                logger.Debug("Waiting for DLL to load...");
+                while (!IsDllLoaded(process, dll)) {
+                    Thread.Sleep(100);
+                }
+
                 if (process.WaitForInputIdle()) {
                     logger.Debug("Closing remote thread");
                     CloseHandle(threadHandle);
@@ -275,6 +280,17 @@ namespace Injector {
             }
 
             return process;
+        }
+
+        private Boolean IsDllLoaded(Process process, FileInfo dll) {
+            process.Refresh();
+            foreach (ProcessModule processModule in process.Modules) {
+                if (processModule.FileName.Equals(dll.FullName, StringComparison.OrdinalIgnoreCase)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void WaitForDlls(Process process, List<FileInfo> waitDlls, uint timeout = InjectorOptions.DEFAULT_INJECTION_DELAY) {
