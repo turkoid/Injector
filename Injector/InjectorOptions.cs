@@ -1,12 +1,12 @@
-﻿using System;
+﻿using CommandLine;
+using CommandLine.Text;
+using IniParser;
+using IniParser.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using CommandLine;
-using CommandLine.Text;
-using IniParser;
-using IniParser.Model;
 
 namespace Injector {
     public class InjectorOptions {

@@ -27,6 +27,8 @@ namespace Injector {
 
         private readonly InjectorOptions opts;
 
+        private bool processStarted;
+
         public Injector(InjectorOptions opts) {
             this.opts = opts;
         }
@@ -85,6 +87,7 @@ namespace Injector {
                             Program.HandleError($"{opts.StartProcess} not found. Ensure the path is correct");
                         }
                     }
+
                     string app = opts.StartProcess;
                     string app_args = "";
                     if (opts.IsWindowsApp) {
@@ -95,6 +98,7 @@ namespace Injector {
 
                     logger.Info($"Starting {opts.StartProcess}");
                     process = Process.Start(app, app_args);
+                    processStarted = true;
 
                     if (opts.ProcessName != null) {
                         // if the exe to inject to is different than the one started

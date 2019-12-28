@@ -1,9 +1,9 @@
-﻿using System;
+﻿using CommandLine;
+using CommandLine.Text;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
-using CommandLine;
-using CommandLine.Text;
 
 namespace Injector {
     class Program {
