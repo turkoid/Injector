@@ -172,12 +172,18 @@ namespace Injector {
                 }
             }
 
+            List<string> existingWaitDlls = new List<string>();
             foreach (string dll in WaitDlls) {
                 FileInfo dllInfo = GetDllInfo(dll);
-                if (!File.Exists(dllInfo.FullName)) {
-                    Program.HandleError($"Wait DLL not found: {dllInfo.FullName}");
+                if (File.Exists(dllInfo.FullName)) {
+                    existingWaitDlls.Add(dll);
+                } else {
+                    logger.Warn($"Wait DLL not found: {dllInfo.FullName}");
                 }
+
             }
+
+            WaitDlls = existingWaitDlls;
         }
 
         public void Log() {
