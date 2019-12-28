@@ -171,7 +171,7 @@ namespace Injector {
                 }
             }
 
-            foreach (string dll in Dlls) {
+            foreach (string dll in WaitDlls) {
                 FileInfo dllInfo = GetDllInfo(dll);
                 if (!File.Exists(dllInfo.FullName)) {
                     Program.HandleError($"Wait DLL not found: {dllInfo.FullName}");

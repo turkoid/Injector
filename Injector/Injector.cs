@@ -26,7 +26,7 @@ namespace Injector {
         private static readonly Logger logger = Logger.Instance();
 
         private readonly InjectorOptions opts;
-        
+
         public Injector(InjectorOptions opts) {
             this.opts = opts;
         }
@@ -123,17 +123,8 @@ namespace Injector {
                 Program.HandleError("No process to inject.");
             }
 
-            List<FileInfo> dlls = new List<FileInfo>();
-            foreach (string dll in opts.Dlls) {
-                FileInfo dllInfo = opts.GetDllInfo(dll);
-                dlls.Add(dllInfo);
-            }
-
-            List<FileInfo> wait_dlls = new List<FileInfo>();
-            foreach (string dll in opts.WaitDlls) {
-                FileInfo dllInfo = opts.GetDllInfo(dll);
-                dlls.Add(dllInfo);
-            }
+            List<FileInfo> dlls = BuildDllInfos(opts.Dlls);
+            List<FileInfo> wait_dlls = BuildDllInfos(opts.WaitDlls);
 
             if (opts.StartProcess == null) {
                 logger.Debug("Not delaying before injection. Process already started.");
@@ -153,6 +144,16 @@ namespace Injector {
                 logger.Info($"Injecting {dlls.Count} DLL(s) into {process.ProcessName} ({process.Id})");
                 InjectIntoProcess(process, dlls.ToArray(), opts.InjectLoopDelay);
             }
+        }
+
+        private List<FileInfo> BuildDllInfos(IEnumerable<string> option_dlls) {
+            List<FileInfo> dllInfos = new List<FileInfo>();
+            foreach (string dll in option_dlls) {
+                FileInfo dllInfo = opts.GetDllInfo(dll);
+                dllInfos.Add(dllInfo);
+            }
+
+            return dllInfos;
         }
 
         private void InjectIntoProcess(Process process, FileInfo[] dlls, uint delay = InjectorOptions.DEFAULT_INJECTION_LOOP_DELAY) {
