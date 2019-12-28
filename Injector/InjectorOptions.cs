@@ -1,12 +1,12 @@
-﻿using CommandLine;
-using CommandLine.Text;
-using IniParser;
-using IniParser.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CommandLine;
+using CommandLine.Text;
+using IniParser;
+using IniParser.Model;
 
 namespace Injector {
     public class InjectorOptions {
@@ -24,11 +24,17 @@ namespace Injector {
         [Option('s', "start", HelpText = "Path to the process to start")]
         public string StartProcess { get; set; }
 
+        [Option("process-restarts", Default = false, HelpText = "Indicates the process restarts")]
+        public bool ProcessRestarts { get; set; }
+
         [Option('w', "win", Default = false, HelpText = "Indicates the process to start is a windows app")]
         public bool IsWindowsApp { get; set; }
 
         [Option('d', "delay", Default = DEFAULT_INJECTION_DELAY, HelpText = "Delay(ms) after starting process to start injection")]
         public uint InjectionDelay { get; set; }
+
+        [Option("wait-for-dlls", HelpText = "The paths or config keys of DLLs the injector should wait to be loaded before attempting to inject")]
+        public IEnumerable<string> WaitDlls { get; set; }
 
         [Option('m', "multi-dll-delay", Default = DEFAULT_INJECTION_LOOP_DELAY,
             HelpText = "Delay(ms) between injecting multiple DLLs")]
@@ -120,8 +126,10 @@ namespace Injector {
                 ProcessId = ParseConfigValue("pid", typeof(int), ProcessId);
                 ProcessName = ParseConfigValue("process", typeof(string), ProcessName);
                 StartProcess = ParseConfigValue("start", typeof(string), StartProcess);
+                ProcessRestarts = ParseConfigValue("process-restarts", typeof(bool), ProcessRestarts);
                 IsWindowsApp = ParseConfigValue("win", typeof(bool), IsWindowsApp);
                 InjectionDelay = ParseConfigValue("delay", typeof(int), InjectionDelay);
+                WaitDlls = ParseConfigValue("wait-for-dlls", typeof(List<>), WaitDlls);
                 InjectLoopDelay = ParseConfigValue("multi-dll-delay", typeof(int), InjectLoopDelay);
                 Timeout = ParseConfigValue("timeout", typeof(int), Timeout);
                 Quiet = ParseConfigValue("quiet", typeof(bool), Quiet);
@@ -163,8 +171,10 @@ namespace Injector {
             sb.AppendLine($"  pid={ProcessId}");
             sb.AppendLine($"  process={ProcessName}");
             sb.AppendLine($"  start={StartProcess}");
+            sb.AppendLine($"  process-restarts={ProcessRestarts}");
             sb.AppendLine($"  win={IsWindowsApp}");
             sb.AppendLine($"  delay={InjectionDelay}");
+            sb.AppendLine($"  wait-for-dlls={string.Join(' ', WaitDlls)}");
             sb.AppendLine($"  multi-dll-delay={InjectLoopDelay}");
             sb.AppendLine($"  timeout={Timeout}");
             sb.AppendLine($"  quiet={Quiet}");
