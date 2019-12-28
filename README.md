@@ -15,6 +15,8 @@ Download latest release [here](https://github.com/turkoid/Injector/releases/late
   * Can inject multiple dlls with one call
   * Can be specified to start the process before injecting (Supports Microsoft Store apps too)
   * Delays can be adjusted to provide stable injections
+  * Can wait for specific dlls to be loaded before injecting
+  * Smart injection delay waits for all DLLs to load
 
 ## Command-line Options
 
@@ -30,6 +32,10 @@ Download latest release [here](https://github.com/turkoid/Injector/releases/late
 
     The path to process to start. Supports Microsoft store apps (see below)
 
+  * `--process-restarts`
+
+    If passed, then the injector will explicily see if the process restarts itself. Explicitly passing this saves some time, but the injector can autodetect this
+
   * `-w | --win`
 
     If passed, then the process to start is a Microsoft store app (Default: `false`)
@@ -37,6 +43,10 @@ Download latest release [here](https://github.com/turkoid/Injector/releases/late
   * `-d | --delay`
 
     Specifies the delay, in milliseconds, after the process has started before the injection process starts (Default: `5000`)
+
+  * `--wait-for-dlls`
+
+    DLLs that should be loaded before attempting to inject. Multiple DLLs should be separated by space. Full paths can be used or config keys (see below)
 
   * `-m | --multi-dll-delay`
 
@@ -64,7 +74,7 @@ Download latest release [here](https://github.com/turkoid/Injector/releases/late
 
   * `DLLS (pos. 0)`
 
-    One or more dlls to inject into the process, separated by space. Full paths can be used or config keys (see below)
+    DLLs to inject into the process. Multiple DLLs should be separated by space. Full paths can be used or config keys (see below)
 
 
 ## Microsoft Store Apps
@@ -84,8 +94,10 @@ All options can be defined using an INI config file. Allows you to easily switch
 pid=1234
 process=program.exe
 start=launcher.exe
+process-restarts=false
 win=false
 delay=5
+wait-for-dlls=required_dll
 multi-dll-delay=1
 timeout=3
 quiet=false
@@ -96,6 +108,7 @@ dlls=some_key another_key path\to\dll
 [DLL]
 some_key=path\to\dll
 another_key=path\to\another\dll
+required_dll=path\to\required\dll
 ```
 
 You can specify easy to use keys instead of the the full paths to the DLLs when using the command line or config file.  You can mix keys and paths, as well.
@@ -114,7 +127,7 @@ Unfortunately, if the injection still fails, but works with other injection util
 
 **I specified a Microsoft store app, but it doesn't start**
 
-Make sure the use the format specified above and make sure to use the `win` option.
+Make sure the use the format specified above.
 
 ## Disclaimer
 
