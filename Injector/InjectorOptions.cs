@@ -123,15 +123,15 @@ namespace Injector {
         public void UpdateFromFile() {
             if (Config != null) {
                 logger.Debug("Overriding command line args with config values");
-                ProcessId = ParseConfigValue("pid", typeof(int), ProcessId);
+                ProcessId = ParseConfigValue("pid", typeof(uint), ProcessId);
                 ProcessName = ParseConfigValue("process", typeof(string), ProcessName);
                 StartProcess = ParseConfigValue("start", typeof(string), StartProcess);
                 ProcessRestarts = ParseConfigValue("process-restarts", typeof(bool), ProcessRestarts);
                 IsWindowsApp = ParseConfigValue("win", typeof(bool), IsWindowsApp);
-                InjectionDelay = ParseConfigValue("delay", typeof(int), InjectionDelay);
+                InjectionDelay = ParseConfigValue("delay", typeof(uint), InjectionDelay);
                 WaitDlls = ParseConfigValue("wait-for-dlls", typeof(List<>), WaitDlls);
-                InjectLoopDelay = ParseConfigValue("multi-dll-delay", typeof(int), InjectLoopDelay);
-                Timeout = ParseConfigValue("timeout", typeof(int), Timeout);
+                InjectLoopDelay = ParseConfigValue("multi-dll-delay", typeof(uint), InjectLoopDelay);
+                Timeout = ParseConfigValue("timeout", typeof(uint), Timeout);
                 Quiet = ParseConfigValue("quiet", typeof(bool), Quiet);
                 Verbose = ParseConfigValue("verbose", typeof(bool), Verbose);
                 Dlls = ParseConfigValue("dlls", typeof(List<>), Dlls);
