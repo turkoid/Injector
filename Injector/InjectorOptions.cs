@@ -60,6 +60,7 @@ namespace Injector {
             HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order. Use 'dlls' for the config file")]
         public IEnumerable<string> Dlls { get; set; }
 
+
         [Usage(ApplicationAlias = "injector")]
         public static IEnumerable<Example> Examples {
             get {
@@ -138,7 +139,7 @@ namespace Injector {
             }
         }
 
-        public FileInfo Dll(string key) {
+        public FileInfo GetDllInfo(string key) {
             string filePath = null;
             if (Config != null) {
                 filePath = Config.GetKey($"DLL.{key}")?.Trim();
@@ -162,6 +163,13 @@ namespace Injector {
 
             if ((Dlls?.Count() ?? 0) == 0) {
                 Program.HandleError("No DLLs to inject");
+            }
+
+            foreach (string dll in Dlls) {
+                FileInfo dllInfo = GetDllInfo(dll);
+                if (!File.Exists(dllInfo.FullName)) {
+                    Program.HandleError($"DLL not found: {dllInfo.FullName}");
+                }
             }
         }
 
