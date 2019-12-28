@@ -26,9 +26,7 @@ namespace Injector {
         private static readonly Logger logger = Logger.Instance();
 
         private readonly InjectorOptions opts;
-
-        private bool processStarted;
-
+        
         public Injector(InjectorOptions opts) {
             this.opts = opts;
         }
@@ -98,7 +96,6 @@ namespace Injector {
 
                     logger.Info($"Starting {opts.StartProcess}");
                     process = Process.Start(app, app_args);
-                    processStarted = true;
 
                     if (opts.ProcessName != null) {
                         // if the exe to inject to is different than the one started
@@ -268,7 +265,10 @@ namespace Injector {
         private Process WaitForProcessRestart(Process process, uint timeout = InjectorOptions.DEFAULT_TIMEOUT) {
             if (process.WaitForExit((int)timeout)) {
                 logger.Debug("Waiting for process to restart with new pid");
-                process = WaitForProcess(opts.ProcessName, opts.Timeout);
+                string processPath = opts.ProcessName == null
+                    ? opts.StartProcess
+                    : opts.ProcessName;
+                process = WaitForProcess(processPath, opts.Timeout);
             } else {
                 logger.Debug("Process may have already exited");
             }
@@ -318,7 +318,7 @@ namespace Injector {
                 Thread.Sleep(polling_rate);
             }
 
-            if (waitDlls.Count() > 0) {
+            if (waitDlls.Count > 0) {
                 logger.Warn("Not all wait DLLS found. Continuing with injection. See log for details");
                 foreach (FileInfo waitDll in waitDlls) {
                     logger.Debug($"wait DLL not found: {waitDll.FullName}");
