@@ -42,7 +42,7 @@ Download latest release [here](https://github.com/turkoid/Injector/releases/late
 
   * `-d | --delay`
 
-    Specifies the delay, in milliseconds, after the process has started before the injection process starts (Default: `5000`)
+    Specifies the delay, in milliseconds, after the process has started and initialization has completed, before the injection process starts (Default: `5000`)
 
   * `--wait-for-dlls`
 
