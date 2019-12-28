@@ -277,7 +277,7 @@ namespace Injector {
         }
 
         private void WaitForDlls(Process process, List<FileInfo> waitDlls, uint timeout = InjectorOptions.DEFAULT_INJECTION_DELAY) {
-            Dictionary<string, string> loadedModules = new Dictionary<string, string>();
+            Dictionary<string, List<string>> loadedModules = new Dictionary<string, List<string>>();
 
             int timeout_counter = (int)timeout;
             int polling_rate = 100;
@@ -289,14 +289,15 @@ namespace Injector {
                     bool moduleLoaded = false;
                     if (!loadedModules.ContainsKey(processModule.ModuleName)) {
                         logger.Debug($"Loaded {processModule.ModuleName} - {processModule.FileName}");
+                        loadedModules[processModule.ModuleName] = new List<string>();
                         moduleLoaded = true;
-                    } else if (!loadedModules[processModule.ModuleName].Equals(processModule.FileName)) {
+                    } else if (!loadedModules[processModule.ModuleName].Contains(processModule.FileName.ToLower())) {
                         logger.Debug($"Changed {processModule.ModuleName} - {processModule.FileName}");
                         moduleLoaded = true;
                     }
 
                     if (moduleLoaded) {
-                        loadedModules[processModule.ModuleName] = processModule.FileName;
+                        loadedModules[processModule.ModuleName].Add(processModule.FileName.ToLower());
                         foreach (FileInfo waitDll in waitDlls) {
                             if (processModule.FileName.Equals(waitDll.FullName, StringComparison.OrdinalIgnoreCase)) {
                                 logger.Info($"Wait DLL loaded: {waitDll.FullName}");
@@ -319,7 +320,7 @@ namespace Injector {
             }
 
             if (waitDlls.Count > 0) {
-                logger.Warn("Not all wait DLLS found. Continuing with injection. See log for details");
+                logger.Warn("Not all wait DLLs found. Continuing with injection. See log for details");
                 foreach (FileInfo waitDll in waitDlls) {
                     logger.Debug($"wait DLL not found: {waitDll.FullName}");
                 }
