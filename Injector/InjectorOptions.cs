@@ -7,12 +7,13 @@ using CommandLine;
 using CommandLine.Text;
 using IniParser;
 using IniParser.Model;
+using Microsoft.VisualBasic;
 
 namespace Injector {
     public class InjectorOptions {
         public const uint DEFAULT_INJECTION_DELAY = 5000;
         public const uint DEFAULT_INJECTION_LOOP_DELAY = 1000;
-        public const uint DEFAULT_TIMEOUT = 10000;
+        public const uint DEFAULT_TIMEOUT = 5000;
         private static readonly Logger logger = Logger.Instance();
 
         [Option('p', "pid", HelpText = "The process id of the process to inject into")]

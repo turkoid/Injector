@@ -44,7 +44,7 @@ Download latest release [here](https://github.com/turkoid/Injector/releases/late
 
   * `-t | --timeout`
 
-    Specifies the timeout, in milliseconds, when attempting to find the process by name (Default: `10000`)
+    Specifies the timeout, in milliseconds, when attempting to find the process by name (Default: `5000`)
 
   * `-c | --config`
 
