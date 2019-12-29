@@ -12,7 +12,7 @@ namespace Injector {
     public class InjectorOptions {
         public const uint DEFAULT_INJECTION_DELAY = 5000;
         public const uint DEFAULT_INJECTION_LOOP_DELAY = 1000;
-        public const uint DEFAULT_TIMEOUT = 10000;
+        public const uint DEFAULT_TIMEOUT = 30000;
         private static readonly Logger logger = Logger.Instance();
 
         [Option('p', "pid", HelpText = "The process id of the process to inject into")]
@@ -24,11 +24,17 @@ namespace Injector {
         [Option('s', "start", HelpText = "Path to the process to start")]
         public string StartProcess { get; set; }
 
+        [Option("process-restarts", Default = false, HelpText = "Indicates the process restarts")]
+        public bool ProcessRestarts { get; set; }
+
         [Option('w', "win", Default = false, HelpText = "Indicates the process to start is a windows app")]
         public bool IsWindowsApp { get; set; }
 
         [Option('d', "delay", Default = DEFAULT_INJECTION_DELAY, HelpText = "Delay(ms) after starting process to start injection")]
         public uint InjectionDelay { get; set; }
+
+        [Option("wait-for-dlls", HelpText = "The paths or config keys of DLLs the injector should wait to be loaded before attempting to inject")]
+        public IEnumerable<string> WaitDlls { get; set; }
 
         [Option('m', "multi-dll-delay", Default = DEFAULT_INJECTION_LOOP_DELAY,
             HelpText = "Delay(ms) between injecting multiple DLLs")]
@@ -102,13 +108,14 @@ namespace Injector {
             if (Config.TryGetKey($"Config.{key}", out string value)) {
                 logger.Debug($"Using config value for {key}");
                 value = value.Trim();
-                value = value == "" ? null : value;
-                if (type == typeof(List<>)) {
-                    List<string> values = value.Split(' ').ToList();
-                    return values;
-                }
+                if (!value.Equals("")) {
+                    if (type == typeof(List<>)) {
+                        List<string> values = value.Split(' ').ToList();
+                        return values;
+                    }
 
-                return Convert.ChangeType(value, type);
+                    return Convert.ChangeType(value, type);
+                }
             }
 
             return defaultValue;
@@ -117,20 +124,22 @@ namespace Injector {
         public void UpdateFromFile() {
             if (Config != null) {
                 logger.Debug("Overriding command line args with config values");
-                ProcessId = ParseConfigValue("pid", typeof(int), ProcessId);
+                ProcessId = ParseConfigValue("pid", typeof(uint), ProcessId);
                 ProcessName = ParseConfigValue("process", typeof(string), ProcessName);
                 StartProcess = ParseConfigValue("start", typeof(string), StartProcess);
+                ProcessRestarts = ParseConfigValue("process-restarts", typeof(bool), ProcessRestarts);
                 IsWindowsApp = ParseConfigValue("win", typeof(bool), IsWindowsApp);
-                InjectionDelay = ParseConfigValue("delay", typeof(int), InjectionDelay);
-                InjectLoopDelay = ParseConfigValue("multi-dll-delay", typeof(int), InjectLoopDelay);
-                Timeout = ParseConfigValue("timeout", typeof(int), Timeout);
+                InjectionDelay = ParseConfigValue("delay", typeof(uint), InjectionDelay);
+                WaitDlls = ParseConfigValue("wait-for-dlls", typeof(List<>), WaitDlls);
+                InjectLoopDelay = ParseConfigValue("multi-dll-delay", typeof(uint), InjectLoopDelay);
+                Timeout = ParseConfigValue("timeout", typeof(uint), Timeout);
                 Quiet = ParseConfigValue("quiet", typeof(bool), Quiet);
                 Verbose = ParseConfigValue("verbose", typeof(bool), Verbose);
                 Dlls = ParseConfigValue("dlls", typeof(List<>), Dlls);
             }
         }
 
-        public FileInfo Dll(string key) {
+        public FileInfo GetDllInfo(string key) {
             string filePath = null;
             if (Config != null) {
                 filePath = Config.GetKey($"DLL.{key}")?.Trim();
@@ -155,6 +164,25 @@ namespace Injector {
             if ((Dlls?.Count() ?? 0) == 0) {
                 Program.HandleError("No DLLs to inject");
             }
+
+            foreach (string dll in Dlls) {
+                FileInfo dllInfo = GetDllInfo(dll);
+                if (!File.Exists(dllInfo.FullName)) {
+                    Program.HandleError($"DLL not found: {dllInfo.FullName}");
+                }
+            }
+
+            List<string> existingWaitDlls = new List<string>();
+            foreach (string dll in WaitDlls) {
+                FileInfo dllInfo = GetDllInfo(dll);
+                if (File.Exists(dllInfo.FullName)) {
+                    existingWaitDlls.Add(dll);
+                } else {
+                    logger.Warn($"Wait DLL not found: {dllInfo.FullName}");
+                }
+            }
+
+            WaitDlls = existingWaitDlls;
         }
 
         public void Log() {
@@ -163,8 +191,10 @@ namespace Injector {
             sb.AppendLine($"  pid={ProcessId}");
             sb.AppendLine($"  process={ProcessName}");
             sb.AppendLine($"  start={StartProcess}");
+            sb.AppendLine($"  process-restarts={ProcessRestarts}");
             sb.AppendLine($"  win={IsWindowsApp}");
             sb.AppendLine($"  delay={InjectionDelay}");
+            sb.AppendLine($"  wait-for-dlls={string.Join(' ', WaitDlls)}");
             sb.AppendLine($"  multi-dll-delay={InjectLoopDelay}");
             sb.AppendLine($"  timeout={Timeout}");
             sb.AppendLine($"  quiet={Quiet}");

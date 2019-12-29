@@ -85,6 +85,7 @@ namespace Injector {
                             Program.HandleError($"{opts.StartProcess} not found. Ensure the path is correct");
                         }
                     }
+
                     string app = opts.StartProcess;
                     string app_args = "";
                     if (opts.IsWindowsApp) {
@@ -101,6 +102,15 @@ namespace Injector {
                         logger.Debug("Waiting for real process to start...");
                         process = WaitForProcess(opts.ProcessName, opts.Timeout);
                     }
+
+                    if (opts.ProcessRestarts) {
+                        logger.Debug("Waiting for original process to exit");
+                        process = WaitForProcessRestart(process, opts.Timeout);
+                        opts.ProcessRestarts = false;
+                    } else {
+                        // set this to true, so we can attempt to wait for a restart even if the option is not set
+                        opts.ProcessRestarts = true;
+                    }
                 } else {
                     logger.Info("Process already started.");
                 }
@@ -113,33 +123,37 @@ namespace Injector {
                 Program.HandleError("No process to inject.");
             }
 
+            List<FileInfo> dlls = BuildDllInfos(opts.Dlls);
+            List<FileInfo> wait_dlls = BuildDllInfos(opts.WaitDlls);
+
             if (opts.StartProcess == null) {
                 logger.Debug("Not delaying before injection. Process already started.");
-            } else if (opts.InjectionDelay > 0) {
-                logger.Info(
-                    $"Delaying injection by {opts.InjectionDelay}ms to allow the process to initialize fully");
-                Thread.Sleep((int)opts.InjectionDelay);
+            } else {
+                logger.Info("Waiting for process to fully load");
+                try {
+                    WaitForDlls(process, wait_dlls, opts.InjectionDelay);
+                } catch (Exception ex) when (process.HasExited && opts.ProcessRestarts) {
+                    logger.Debug("It seems the process exited while waiting for it to initialize");
+                    process = WaitForProcessRestart(process, opts.Timeout);
+                    //if we fail here, then injector exits with error
+                    WaitForDlls(process, wait_dlls, opts.InjectionDelay);
+                }
             }
 
             if (process.WaitForInputIdle()) {
-                List<FileInfo> dlls = new List<FileInfo>();
-                foreach (string dll in opts.Dlls) {
-                    FileInfo dllInfo = opts.Dll(dll);
-                    if (!File.Exists(dllInfo.FullName)) {
-                        Program.HandleError($"DLL not found: {dllInfo.FullName}");
-                    }
-
-                    dlls.Add(dllInfo);
-                }
-
                 logger.Info($"Injecting {dlls.Count} DLL(s) into {process.ProcessName} ({process.Id})");
                 InjectIntoProcess(process, dlls.ToArray(), opts.InjectLoopDelay);
-
-                if (process.HasExited) {
-                    Program.HandleError(
-                        "Process crashed. Try changing the dll injection order or adjusting delays");
-                }
             }
+        }
+
+        private List<FileInfo> BuildDllInfos(IEnumerable<string> option_dlls) {
+            List<FileInfo> dllInfos = new List<FileInfo>();
+            foreach (string dll in option_dlls) {
+                FileInfo dllInfo = opts.GetDllInfo(dll);
+                dllInfos.Add(dllInfo);
+            }
+
+            return dllInfos;
         }
 
         private void InjectIntoProcess(Process process, FileInfo[] dlls, uint delay = InjectorOptions.DEFAULT_INJECTION_LOOP_DELAY) {
@@ -181,6 +195,11 @@ namespace Injector {
                     0, IntPtr.Zero);
                 if (procHandle == IntPtr.Zero) {
                     Program.HandleWin32Error("Unable to create a remote thread in the process. Failed to inject the dll");
+                }
+
+                logger.Debug("Waiting for DLL to load...");
+                while (!IsDllLoaded(process, dll)) {
+                    Thread.Sleep(100);
                 }
 
                 if (process.WaitForInputIdle()) {
@@ -247,6 +266,84 @@ namespace Injector {
             }
 
             return process;
+        }
+
+        private Process WaitForProcessRestart(Process process, uint timeout = InjectorOptions.DEFAULT_TIMEOUT) {
+            if (process.WaitForExit((int)timeout)) {
+                logger.Debug("Waiting for process to restart with new pid");
+                string processPath = opts.ProcessName == null
+                    ? opts.StartProcess
+                    : opts.ProcessName;
+                process = WaitForProcess(processPath, opts.Timeout);
+            } else {
+                logger.Debug("Process may have already exited");
+            }
+
+            return process;
+        }
+
+        private Boolean IsDllLoaded(Process process, FileInfo dll) {
+            process.Refresh();
+            foreach (ProcessModule processModule in process.Modules) {
+                if (processModule.FileName.Equals(dll.FullName, StringComparison.OrdinalIgnoreCase)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void WaitForDlls(Process process, List<FileInfo> waitDlls, uint timeout = InjectorOptions.DEFAULT_INJECTION_DELAY) {
+            Dictionary<string, List<string>> loadedModules = new Dictionary<string, List<string>>();
+
+            int timeout_counter = (int)timeout;
+            int polling_rate = 100;
+
+            while (timeout_counter > 0 && process.WaitForInputIdle()) {
+                bool modulesChanged = false;
+                process.Refresh();
+                foreach (ProcessModule processModule in process.Modules) {
+                    bool moduleLoaded = false;
+                    if (!loadedModules.ContainsKey(processModule.ModuleName)) {
+                        logger.Debug($"Loaded {processModule.ModuleName} - {processModule.FileName}");
+                        loadedModules[processModule.ModuleName] = new List<string>();
+                        moduleLoaded = true;
+                    } else if (!loadedModules[processModule.ModuleName].Contains(processModule.FileName.ToLower())) {
+                        logger.Debug($"Changed {processModule.ModuleName} - {processModule.FileName}");
+                        moduleLoaded = true;
+                    }
+
+                    if (moduleLoaded) {
+                        loadedModules[processModule.ModuleName].Add(processModule.FileName.ToLower());
+                        foreach (FileInfo waitDll in waitDlls) {
+                            if (processModule.FileName.Equals(waitDll.FullName, StringComparison.OrdinalIgnoreCase)) {
+                                logger.Info($"Wait DLL loaded: {waitDll.FullName}");
+                                waitDlls.Remove(waitDll);
+                                break;
+                            }
+                        }
+
+                        modulesChanged = true;
+                    }
+                }
+
+                if (modulesChanged) {
+                    logger.Debug("timeout reset since modules changed");
+                    timeout_counter = (int)timeout;
+                }
+
+                timeout_counter -= polling_rate;
+                Thread.Sleep(polling_rate);
+            }
+
+            if (waitDlls.Count > 0) {
+                logger.Warn("Not all wait DLLs found. Continuing with injection. See log for details");
+                foreach (FileInfo waitDll in waitDlls) {
+                    logger.Debug($"wait DLL not found: {waitDll.FullName}");
+                }
+            } else {
+                logger.Info("Process modules possibly fully loaded");
+            }
         }
     }
 }
