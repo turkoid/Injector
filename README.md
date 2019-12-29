@@ -1,13 +1,14 @@
 # Injector
 
-[![Build status](https://ci.appveyor.com/api/projects/status/ovg6mouwm3p4d51e?svg=true)](https://ci.appveyor.com/project/turkoid/injector)
+[![Build status](https://ci.appveyor.com/api/projects/status/ovg6mouwm3p4d51e/branch/master?svg=true)](https://ci.appveyor.com/project/turkoid/injector/branch/master)
 
 Commandline tool that injects one or more DLLs into a process. Optionally also starts that process before injecting.
 
 ## Download
 
-Download latest release [here](https://github.com/turkoid/Injector/releases/latest)
+Download [here](https://github.com/turkoid/Injector/releases/latest)
 
+Download latest release [here](https://ci.appveyor.com/project/turkoid/injector/build/artifacts?branch=master)
 ## Features
 
   * Completely command line driven. No GUI
