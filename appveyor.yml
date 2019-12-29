@@ -5,7 +5,21 @@ install:
   - sh: https://dotnetwebsite.azurewebsites.net/download/dotnet-core/scripts/v1/dotnet-install.sh --version 3.1.100
 build_script:
   - cmd: dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true
-after_build:
-  - cmd: 7z a injector-%APPVEYOR_BUILD_VERSION%-win64.zip .\LICENSE .\README.md .\CHANGELOG.md .\sample-config.ini .\Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
-artifacts:
-  - path: injector-%APPVEYOR_BUILD_VERSION%-win64.zip
+
+for:
+-
+  branches:
+    only:
+      - master
+    after_build:
+      - cmd: 7z a injector-%APPVEYOR_BUILD_VERSION%-win64.zip .\LICENSE .\README.md .\CHANGELOG.md .\sample-config.ini .\Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
+    artifacts:
+      - path: injector-%APPVEYOR_BUILD_VERSION%-win64.zip
+-
+  branches:
+    except:
+      - master
+    after_build:
+      - cmd: 7z a injector_dev_%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%-win64.zip .\LICENSE .\README.md .\CHANGELOG.md .\sample-config.ini .\Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
+    artifacts:
+      - path: injector_dev_%APPVEYOR_REPO_BRANCH%-%APPVEYOR_BUILD_VERSION%-win64.zip
