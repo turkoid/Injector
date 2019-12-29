@@ -6,9 +6,10 @@ Commandline tool that injects one or more DLLs into a process. Optionally also s
 
 ## Download
 
-Download [here](https://github.com/turkoid/Injector/releases/latest)
+Download latest release [here](https://github.com/turkoid/Injector/releases/latest)
 
-Download latest release [here](https://ci.appveyor.com/project/turkoid/injector/build/artifacts?branch=master)
+Download latest master build [here](https://ci.appveyor.com/project/turkoid/injector/build/artifacts?branch=master)
+
 ## Features
 
   * Completely command line driven. No GUI
