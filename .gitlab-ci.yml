@@ -4,13 +4,13 @@ stages:
 
 variables:
   VERSION: 1.2.0+$CI_JOB_ID
-
-default:
-  image: mcr.microsoft.com/dotnet/core/sdk:3.1
-
-.build-win-x64: &build-win-x64 
-  script: "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   
+.build-win-x64: &build-win-x64 
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  script: "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
+  artifacts:
+    paths: 
+      - publish/Injector.exe
 master:
   stage: build
   <<: *build-win-x64
