@@ -1,13 +1,11 @@
 default:
-  image: microsoft/dotnet:latest
+  image: microsoft/dotnet/core
 
 .build-win-x64: &build-win-x64 
   - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
   
 master:
   script: *build-win-x64
-  only:
-    - master
   except:
     - tags
   artifacts:
@@ -23,8 +21,3 @@ release:
   only:
     - tags
     - /^v\d+\.\d+\.\d+$/
-
-default:
-  script: *build-win-x64
-  except:
-    - tags
