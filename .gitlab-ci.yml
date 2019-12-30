@@ -2,7 +2,7 @@ stages:
   - build
 
 default:
-  image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  image: microsoft/dotnet:latest
 
 .build-win-x64: &build-win-x64 
   - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
