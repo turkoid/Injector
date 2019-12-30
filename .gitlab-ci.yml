@@ -1,29 +1,33 @@
 stages:
   - build
+  - archive
+
+variables:
+  VERSION: 1.2.0+$CI_JOB_ID
 
 default:
   image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 .build-win-x64: &build-win-x64 
-  - "dotnet publish -r win-x64 -c Release -o ../publish /p:PublishSingleFile=true"
+  script: "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   
 master:
   stage: build
-  script: 
-    - *build-win-x64
+  <<: *build-win-x64
   except:
     - tags
-  artifacts:
-    paths: 
-      - LICENSE
-      - README.md
-      - CHANGELOG.md
-      - sample-config.ini
-      - ../publish/Injector.exe
 
 release:
   stage: build
-  script: *build-win-x64
+  <<: *build-win-x64
   only:
     - tags
     - /^v\d+\.\d+\.\d+$/
+
+archive:
+  stage: archive
+  script:
+    - zip -j injector-$CI_COMMIT_REF_SLUG-$VERSION.zip LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe
+  artifacts:
+    paths: 
+      - *.zip
