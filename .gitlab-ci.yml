@@ -1,10 +1,14 @@
+stages:
+  - build
+
 default:
   image: microsoft/dotnet:latest
 
 .build-win-x64: &build-win-x64 
-  - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
+  - "dotnet publish -c Release /p:PublishSingleFile=true"
   
 master:
+  stage: build
   script: *build-win-x64
   except:
     - tags
@@ -17,6 +21,7 @@ master:
       - Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
 
 release:
+  stage: build
   script: *build-win-x64
   only:
     - tags
