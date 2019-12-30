@@ -1,24 +1,25 @@
 default:
-	image: microsoft/dotnet:latest
-	script: "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
+  image: microsoft/dotnet:latest
+  script: "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
+
 master:
-	only:
-		- master
-	except:
-		- tags
-	artifacts:
-		paths: 
-			- LICENSE
-			- README.md
-			- CHANGELOG.md
-			- sample-config.ini
-			- Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
+  only:
+    - master
+  except:
+    - tags
+  artifacts:
+    paths: 
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+      - sample-config.ini
+      - Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
 
 release:
-	only:
-		- tags
-		- /^v\d+\.\d+\.\d+$/
+  only:
+    - tags
+    - /^v\d+\.\d+\.\d+$/
 
 default:
-	except:
-		- tags
+  except:
+    - tags
