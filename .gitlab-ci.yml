@@ -5,7 +5,7 @@ variables:
   VERSION: 1.2.0+$CI_JOB_ID
   
 .build-win-x64: &build-win-x64 
-  image: apline:latest
+  image: alpine:latest
   before_script:
     - apt-get install zip
   script: 
