@@ -1,5 +1,5 @@
 default:
-  image: microsoft/dotnet/core
+  image: microsoft/dotnet/core:latest
 
 .build-win-x64: &build-win-x64 
   - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
