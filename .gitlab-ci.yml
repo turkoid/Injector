@@ -40,6 +40,4 @@ release:
   stage: build
   <<: *build-win-x64
   only:
-    - master
-    - tags
-    - /^v\d+\.\d+\.\d+$/
+    - master && tags && \^v\d+\.\d+\.\d+$/
