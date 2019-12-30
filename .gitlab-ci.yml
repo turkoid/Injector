@@ -42,4 +42,4 @@ release:
   stage: build
   <<: *build-win-x64
   only:
-    - /^v\d+\.\d+\.\d+$/
+    - tags
