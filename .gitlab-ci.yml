@@ -17,16 +17,29 @@ variables: &global-variables
 
 master:
   stage: build
+  only:
+    - master
   <<: *build-win-x64
   except:
     - tags
   variables:
     <<: *global-variables
-    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.zip
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
+
+feature-branch:
+  stage: build
+  <<: *build-win-x64
+  except:
+    - master
+    - tags
+  variables:
+    <<: *global-variables
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
 
 release:
   stage: build
   <<: *build-win-x64
   only:
+    - master
     - tags
     - /^v\d+\.\d+\.\d+$/
