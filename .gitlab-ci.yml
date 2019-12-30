@@ -42,4 +42,4 @@ release:
   stage: build
   <<: *build-win-x64
   only:
-    - tags
+    - tags && v1.0.0.0
