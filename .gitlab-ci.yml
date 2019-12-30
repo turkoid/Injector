@@ -27,7 +27,7 @@ release:
 archive:
   stage: archive
   script:
-    - zip -j injector-$CI_COMMIT_REF_SLUG-$VERSION.zip LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe
+    - "zip -j injector-$CI_COMMIT_REF_SLUG-$VERSION.zip LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
   artifacts:
     paths: 
-      - *.zip
+      - "*.zip"
