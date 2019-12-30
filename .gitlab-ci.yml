@@ -29,6 +29,8 @@ master:
 feature-branch:
   stage: build
   <<: *build-win-x64
+  only:
+    - blah
   except:
     - master
     - tags
@@ -40,4 +42,4 @@ release:
   stage: build
   <<: *build-win-x64
   only:
-    - master && tags && /^v\d+\.\d+\.\d+$/
+    - /^v\d+\.\d+\.\d+$/
