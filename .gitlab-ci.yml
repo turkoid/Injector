@@ -1,8 +1,11 @@
 default:
   image: microsoft/dotnet:latest
-  script: "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
 
+.build-win-x64: &build-win-x64 
+  - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
+  
 master:
+  script: *build-win-x64
   only:
     - master
   except:
@@ -16,10 +19,12 @@ master:
       - Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
 
 release:
+  script: *build-win-x64
   only:
     - tags
     - /^v\d+\.\d+\.\d+$/
 
 default:
+  script: *build-win-x64
   except:
     - tags
