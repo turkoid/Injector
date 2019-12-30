@@ -22,7 +22,7 @@ master:
     - tags
   variables:
     <<: *global-variables
-    INJECTOR_ARCHIVE: injector.zip injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.zip
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.zip
 
 release:
   stage: build
