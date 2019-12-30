@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
-    <PackageReference Include="ini-parser" Version="2.5.2" />
+    <PackageReference Include="INIFileParserDotNetCore" Version="2.5.2" />
   </ItemGroup>
 
 </Project>
