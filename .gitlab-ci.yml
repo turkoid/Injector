@@ -10,11 +10,6 @@ variables: &global-variables
     - apk add zip
   script: 
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
-    - "zip -j $INJECTOR_ARCHIVE LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
-  after_script:
-    - echo $CI_COMMIT_REF_NAME
-    - echo $CI_COMMIT_TAG
-    - echo $CI_RUNNER_TAGS
   artifacts:
     paths:
       - $INJECTOR_ARCHIVE
@@ -42,7 +37,12 @@ feature-branch:
 release:
   stage: build
   <<: *build-win-x64
+  after_script:
+    - echo Create Github Release
   only:
     - /^v\d+\.\d+\.\d+$/
   except:
     - branches
+  variables:
+    <<: *global-variables
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
