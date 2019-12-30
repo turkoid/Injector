@@ -9,7 +9,8 @@ default:
   
 master:
   stage: build
-  script: *build-win-x64
+  script: 
+    - *build-win-x64
   except:
     - tags
   artifacts:
