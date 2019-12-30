@@ -7,7 +7,10 @@ variables:
 .build-win-x64: &build-win-x64 
   image: alpine:latest
   before_script:
-    - apt-get install zip
+    - apk add zip
+    - apk add wget
+    - "wget https://dotnetwebsite.azurewebsites.net/download/dotnet-core/scripts/v1/dotnet-install.sh""
+    - sh dotnet-install.sh --version 3.1.100
   script: 
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
     - "zip -j injector-$CI_COMMIT_REF_SLUG-$VERSION.zip LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
