@@ -1,30 +1,45 @@
-default:
-  image: microsoft/dotnet:latest
+stages:
+  - build
+
+variables: &global-variables
+  VERSION: 1.2.0
 
 .build-win-x64: &build-win-x64 
-  - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
-  
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
+  before_script:
+    - apk add zip
+  script: 
+    - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
+    - "zip -j $INJECTOR_ARCHIVE LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
+  artifacts:
+    paths:
+      - $INJECTOR_ARCHIVE
+
 master:
-  script: *build-win-x64
+  stage: build
   only:
     - master
+  <<: *build-win-x64
   except:
     - tags
-  artifacts:
-    paths: 
-      - LICENSE
-      - README.md
-      - CHANGELOG.md
-      - sample-config.ini
-      - Injector\bin\Release\netcoreapp3.0\win-x64\publish\Injector.exe
+  variables:
+    <<: *global-variables
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
+
+feature-branch:
+  stage: build
+  <<: *build-win-x64
+  except:
+    - master
+    - tags
+  variables:
+    <<: *global-variables
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
 
 release:
-  script: *build-win-x64
+  stage: build
+  <<: *build-win-x64
   only:
+    - master
     - tags
     - /^v\d+\.\d+\.\d+$/
-
-default:
-  script: *build-win-x64
-  except:
-    - tags

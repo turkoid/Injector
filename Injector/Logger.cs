@@ -13,7 +13,9 @@ namespace Injector {
         }
 
         public static Logger Instance() {
-            _logger ??= new Logger();
+            if (_logger == null) {
+                _logger = new Logger();
+            }
             return _logger;
         }
 

@@ -132,7 +132,7 @@ namespace Injector {
                 logger.Info("Waiting for process to fully load");
                 try {
                     WaitForDlls(process, wait_dlls, opts.InjectionDelay);
-                } catch (Exception ex) when (process.HasExited && opts.ProcessRestarts) {
+                } catch (Exception) when (process.HasExited && opts.ProcessRestarts) {
                     logger.Debug("It seems the process exited while waiting for it to initialize");
                     process = WaitForProcessRestart(process, opts.Timeout);
                     //if we fail here, then injector exits with error
