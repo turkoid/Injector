@@ -5,7 +5,7 @@ default:
   image: microsoft/dotnet:latest
 
 .build-win-x64: &build-win-x64 
-  - "dotnet publish -c Release /p:PublishSingleFile=true"
+  - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
   
 master:
   stage: build
