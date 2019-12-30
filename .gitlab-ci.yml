@@ -5,7 +5,7 @@ default:
   image: mcr.microsoft.com/dotnet/core/sdk:3.1
 
 .build-win-x64: &build-win-x64 
-  - "dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true"
+  - "dotnet publish -r win-x64 -c Release -o . /p:PublishSingleFile=true"
   
 master:
   stage: build
@@ -19,7 +19,7 @@ master:
       - README.md
       - CHANGELOG.md
       - sample-config.ini
-      - Injector/bin/Release/netcoreapp3.0/win-x64/publish/Injector.exe
+      - Injector.exe
 
 release:
   stage: build
