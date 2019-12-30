@@ -9,7 +9,7 @@ variables:
   before_script:
     - apk add zip
     - apk add wget
-    - "wget https://dotnetwebsite.azurewebsites.net/download/dotnet-core/scripts/v1/dotnet-install.sh""
+    - "wget https://dotnetwebsite.azurewebsites.net/download/dotnet-core/scripts/v1/dotnet-install.sh"
     - sh dotnet-install.sh --version 3.1.100
   script: 
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
