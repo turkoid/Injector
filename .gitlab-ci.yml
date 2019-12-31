@@ -53,9 +53,9 @@ release:
     - apk add jq
   script: echo $GITHUB_API_TOKEN
   after_script: 
-    <<: *create_changelog_fragment
-    <<: *update_github_release
-    <<: *upload_artifacts
+    - *create_changelog_fragment
+    - *update_github_release
+    - *upload_release_artifacts
   only:
     - test-release-job
   variables:
