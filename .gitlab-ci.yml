@@ -43,6 +43,7 @@ release:
     - 'fragment_start="## v1.2.0"'
     - 'fragment_end="## v"'
     - 'sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment'
+    - cat CHANGELOG.md
     - cat $changelog_fragment
   only:
     - test-release-job
