@@ -30,20 +30,20 @@ feature-branch:
     - branches
   except:
     - master
+    - test-release-job
   variables:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
 
 release:
+  image=alpine:latest
   stage: build
-  <<: *build-win-x64
+  script: echo "hello world"
   after_script:
     - 'fragment_start="## v1.2.0"'
     - 'fragment_end="## v"'
     - 'sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" >changelog_fragment'
     - echo $changelog_fragment
+    - echo $fragment_start
   only:
     - test-release-job
-  variables:
-    <<: *global-variables
-    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
