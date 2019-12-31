@@ -35,14 +35,32 @@ feature-branch:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
 
+.create_changelog_fragment: &create_changelog_fragment  
+  - 'fragment_start="## v1.2.0"'
+  - 'fragment_end="## v"'
+  - 'sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment'
+
+.update_github_release: &update_github_release
+  - echo hi
+
+.upload_release_artifacts: &upload_release_artifacts
+  - echo hi
+
 release:
   image: alpine:latest
   stage: build
-  script: echo "hello world"
-  after_script:
-    - 'fragment_start="## v1.2.0"'
-    - 'fragment_end="## v"'
-    - 'sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment'
-    - cat changelog_fragment
+  before_script:
+    - apk add jq
+  script: echo $GITHUB_API_TOKEN
+  after_script: 
+    <<: *create_changelog_fragment
+    <<: *update_github_release
+    <<: *upload_artifacts
   only:
     - test-release-job
+  variables:
+    <<: *global-variables
+    GITHUB_TAG: v1.2.0
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
+    GITHUB_API_URL: https://api.github.com
+    GITHUB_API_RELEASES_URL: /repos/turkoid/Injector/releases
