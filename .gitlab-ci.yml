@@ -51,7 +51,7 @@ feature-branch:
 
 .create_changelog_fragment: &create_changelog_fragment  
   - |
-    fragment_start="## $GITHUB_RELEASE_TAG";
+    fragment_start="## $GITHUB_RELEASE_TAG"
     fragment_end="## v"
     sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
 
@@ -80,6 +80,5 @@ release:
   only:
     - test-release-job
   variables:
-    GIT_STRATEGY: none
     GITHUB_RELEASE_TAG: v1.2.0
     GITHUB_API_URL: https://api.github.com
