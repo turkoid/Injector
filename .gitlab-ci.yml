@@ -2,32 +2,21 @@ stages:
   - build
   - release
 
-.install-build-tools: &install-build-tools
-  - apk add zip
-
-.install-github-tools: &install-github-tools
-  - apk add jq unzip
-
-.build-win-x64: &build-win-x64
-  - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
-
-.create-archive: &create-archive
-  - "zip -j $INJECTOR_ARCHIVE LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
-
 .default:
   image: alpine:latest
   variables:
     VERSION: 1.2.0
+
   
 .build:
   stage: build
   image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
   before_script:
-    - *install-build-tools
+    - apk install zip
   script: 
-    - *build-win-x64
+    - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - *create-archive
+    - "zip -j $INJECTOR_ARCHIVE LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
   artifacts:
     paths:
       - $INJECTOR_ARCHIVE
@@ -70,8 +59,7 @@ release:
   stage: release
   extends: .default
   before_script:
-    - *install-build-tools
-    - *install-github-tools
+    - apk install jq curl unzip
   script: echo "build and create archive"
   after_script: 
     - *create_changelog_fragment
