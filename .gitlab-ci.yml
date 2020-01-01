@@ -12,7 +12,7 @@ stages:
   stage: build
   image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
   before_script:
-    - apk install zip
+    - apk add zip
   script: 
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
@@ -59,7 +59,7 @@ release:
   stage: release
   extends: .default
   before_script:
-    - apk install jq curl unzip
+    - apk add jq curl unzip
   script: echo "build and create archive"
   after_script: 
     - *create_changelog_fragment
