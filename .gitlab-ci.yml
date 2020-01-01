@@ -25,7 +25,6 @@ master:
   extends: .build
   only:
     - master
-    - /v\d+\.\d+\.\d+/
   variables:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
@@ -38,6 +37,7 @@ feature-branch:
     - branches
   except:
     - master
+    - test-release-job
   variables:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
@@ -66,7 +66,8 @@ feature-branch:
   - |
     # Upload release artifacts
     artifact="injector-$VERSION+$CI_PIPELINE_IID.win64.zip"
-    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$artifact $upload_url?name=$(basename $artifact) >response
+    zip $artifact CHANGELOG.md
+    curl -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$artifact $upload_url?name=$(basename $artifact)
     cat response
     download_url=$(cat response | jq .browser_download_url)
   - echo $download_url
@@ -75,13 +76,14 @@ release:
   stage: release
   extends: .default
   before_script:
-    - apk add jq curl
+    - apk add jq curl zip
   script:
     - *create_changelog_fragment
     - *update_github_release
     - *upload_release_artifacts
   only:
     - /v\d+\.\d+\.\d+/
+    - test-release-job
   variables:
     <<: *global-variables
     GITHUB_RELEASE_TAG: $CI_COMMIT_TAG
