@@ -1,17 +1,12 @@
 stages:
   - build
-
-variables: &global-variables
-  VERSION: 1.2.0
-
-.image-dotnet: &image-dotnet
-  image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
+  - release
 
 .install-build-tools: &install-build-tools
   - apk add zip
 
 .install-github-tools: &install-github-tools
-  - apk add jq
+  - apk add jq unzip
 
 .build-win-x64: &build-win-x64
   - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
@@ -19,11 +14,14 @@ variables: &global-variables
 .create-archive: &create-archive
   - "zip -j $INJECTOR_ARCHIVE LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
 
-default:
+.default:
   image: alpine:latest
-
-.job-build-win-x64: &build-win-x64 
-  <<: *image-dotnet
+  variables:
+    VERSION: 1.2.0
+  
+.build:
+  stage: build
+  image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
   before_script:
     - *install-build-tools
   script: 
@@ -35,42 +33,42 @@ default:
       - $INJECTOR_ARCHIVE
 
 master:
-  stage: build
-  <<: *job-build-win-x64
+  extends: .build
   only:
-    - master  
+    - master
   variables:
-    <<: *global-variables
-    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
+    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
 
 feature-branch:
-  stage: build
-  <<: *job-build-win-x64
+  extends: .build
   only:
     - branches
   except:
     - master
     - test-release-job
   variables:
-    <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
 
 .create_changelog_fragment: &create_changelog_fragment  
-  - 'fragment_start="## $GITHUB_RELEASE_TAG"'
-  - 'fragment_end="## v"'
-  - 'sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment'
+  - |
+    fragment_start="## $GITHUB_RELEASE_TAG";
+    fragment_end="## v"
+    sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
 
 .create_github_release: &update_github_release
-  - 'data=$(jq -n --arg tag "$GITHUB_RELEASE_TAG" --arg body "$(cat changelog_fragment)" '"'"'{"tag_name": $tag_name, "body": $body}'"'"')'
+  - "data=$(jq -n --arg tag \"$GITHUB_RELEASE_TAG\" --arg body \"$(cat changelog_fragment)\" '{\"tag_name\": $tag_name, \"body\": $body}')"
   - 'curl -s -H "Authorization: token $GITHUB_API_TOKEN" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response'
   - 'upload_url=$(cat response | jq .upload_url)'
+  - |
+    This is a test test:$test
   - echo $upload_url
 
 .upload_release_artifacts: &upload_release_artifacts
   - echo hi
 
 release:
-  stage: build
+  stage: release
+  extends: .default
   before_script:
     - *install-build-tools
     - *install-github-tools
@@ -82,7 +80,6 @@ release:
   only:
     - test-release-job
   variables:
-    <<: *global-variables
+    GIT_STRATEGY: none
     GITHUB_RELEASE_TAG: v1.2.0
-    INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip
     GITHUB_API_URL: https://api.github.com
