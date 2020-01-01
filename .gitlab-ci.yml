@@ -65,7 +65,7 @@ feature-branch:
   - |
     # Upload release artifacts
     artifact="injector-$VERSION+$CI_PIPELINE_IID.win64.zip"
-    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @artifact $upload_url?name=$(basename artifact) >response
+    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$artifact $upload_url?name=$(basename $artifact) >response
     download_url=$(cat response | jq .browser_download_url)
   - echo $download_url
 
