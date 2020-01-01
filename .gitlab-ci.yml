@@ -59,6 +59,7 @@ feature-branch:
     curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response
     cat response
     upload_url=$(cat response | jq .upload_url)
+    echo $upload_url
     upload_url=${upload_url%\{*}
   - echo $upload_url
 
