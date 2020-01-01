@@ -8,7 +8,6 @@ variables: &global-variables
 .default:
   image: alpine:latest
 
-
 .build:
   stage: build
   image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
@@ -26,6 +25,7 @@ master:
   extends: .build
   only:
     - master
+    - /v\d+\.\d+\.\d+/
   variables:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
@@ -36,6 +36,7 @@ feature-branch:
   extends: .build
   only:
     - branches
+    - tags
   except:
     - master
   variables:
@@ -64,9 +65,8 @@ feature-branch:
 .upload_release_artifacts: &upload_release_artifacts
   - |
     # Upload release artifacts
-    archive=test-v1.2.0.zip
-    zip $archive CHANGELOG.md 
-    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$archive $upload_url?name=$(basename $archive) >response
+    artifact="injector-$VERSION+$CI_PIPELINE_IID.win64.zip
+    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @artifact $upload_url?name=$(basename artifact) >response
     download_url=$(cat response | jq .browser_download_url)
   - echo $download_url
 
@@ -74,9 +74,8 @@ release:
   stage: release
   extends: .default
   before_script:
-    - apk add jq curl unzip zip
-  script: echo "build and create archive"
-  after_script: 
+    - apk add jq curl
+  script:
     - *create_changelog_fragment
     - *update_github_release
     - *upload_release_artifacts
