@@ -25,6 +25,7 @@ master:
   extends: .build
   only:
     - master
+    - /v\d+\.\d+\.\d+/
   variables:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
@@ -37,7 +38,6 @@ feature-branch:
     - branches
   except:
     - master
-    - test-release-job
   variables:
     <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
@@ -59,7 +59,6 @@ feature-branch:
     curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response
     cat response
     upload_url=$(cat response | jq .upload_url)
-    echo $upload_url
     upload_url=${upload_url%\{*}
     upload_url=${upload_url#\"}
   - echo $upload_url
@@ -68,8 +67,7 @@ feature-branch:
   - |
     # Upload release artifacts
     artifact="injector-$VERSION+$CI_PIPELINE_IID.win64.zip"
-    zip $artifact CHANGELOG.md
-    curl -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$artifact $upload_url?name=$(basename $artifact)
+    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$artifact $upload_url?name=$(basename $artifact) >response
     cat response
     download_url=$(cat response | jq .browser_download_url)
   - echo $download_url
@@ -85,8 +83,7 @@ release:
     - *upload_release_artifacts
   only:
     - /v\d+\.\d+\.\d+/
-    - test-release-job
   variables:
     <<: *global-variables
-    GITHUB_RELEASE_TAG: v1.2.0
+    GITHUB_RELEASE_TAG: v$VERSION
     GITHUB_API_URL: https://api.github.com
