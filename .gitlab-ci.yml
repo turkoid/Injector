@@ -7,7 +7,6 @@ stages:
   variables:
     VERSION: 1.2.0
 
-  
 .build:
   stage: build
   image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
@@ -27,6 +26,8 @@ master:
     - master
   variables:
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
+  artifacts:
+    expire_in: 6 months
 
 feature-branch:
   extends: .build
@@ -34,12 +35,14 @@ feature-branch:
     - branches
   except:
     - master
-    - test-release-job
   variables:
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
+  artifacts:
+    expire_in: 1 day
 
 .create_changelog_fragment: &create_changelog_fragment  
   - |
+    # Parse changelog
     fragment_start="## $GITHUB_RELEASE_TAG"
     fragment_end="## v"
     sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
@@ -47,29 +50,34 @@ feature-branch:
 
 .create_github_release: &update_github_release
   - |
-    # create
+    # Create release
     data=$(jq -n --arg tag_name "$GITHUB_RELEASE_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
-    echo $data
-    curl -s -H "Authorization: token $GITHUB_API_TOKEN" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response
-    cat response
+    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response
     upload_url=$(cat response | jq .upload_url)
+    upload_url=${upload_url%\{*}
   - echo $upload_url
 
 .upload_release_artifacts: &upload_release_artifacts
-  - echo hi
+  - |
+    # Upload release artifacts
+    archive=test-v1.2.0.zip
+    zip $archive CHANGELOG.md 
+    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$archive $upload_url?name=$(basename $archive) >response
+    download_url=$(cat response | jq .browser_download_url)
+  - echo $download_url
 
 release:
   stage: release
   extends: .default
   before_script:
-    - apk add jq curl unzip
+    - apk add jq curl unzip zip
   script: echo "build and create archive"
   after_script: 
     - *create_changelog_fragment
     - *update_github_release
     - *upload_release_artifacts
   only:
-    - test-release-job
+    - /v\d+\.\d+\.\d+/
   variables:
-    GITHUB_RELEASE_TAG: v1.2.0
+    GITHUB_RELEASE_TAG: $CI_COMMIT_TAG
     GITHUB_API_URL: https://api.github.com
