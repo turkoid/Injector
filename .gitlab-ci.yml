@@ -54,10 +54,11 @@ feature-branch:
     fragment_start="## $GITHUB_RELEASE_TAG"
     fragment_end="## v"
     sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
+  - cat changelog_fragment
 
 .create_github_release: &update_github_release
   - |
-    data=$(jq -n --arg tag "$GITHUB_RELEASE_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
+    data=$(jq -n --arg $tag_name "$GITHUB_RELEASE_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
     curl -s -H "Authorization: token $GITHUB_API_TOKEN" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response
     upload_url=$(cat response | jq .upload_url)
   - echo $upload_url
