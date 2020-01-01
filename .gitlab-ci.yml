@@ -61,6 +61,7 @@ feature-branch:
     upload_url=$(cat response | jq .upload_url)
     echo $upload_url
     upload_url=${upload_url%\{*}
+    upload_url=${upload_url#\"}
   - echo $upload_url
 
 .upload_release_artifacts: &upload_release_artifacts
