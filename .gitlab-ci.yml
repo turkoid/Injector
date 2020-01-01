@@ -2,10 +2,12 @@ stages:
   - build
   - release
 
+variables: &global-variables
+  VERSION: 1.2.0
+
 .default:
   image: alpine:latest
-  variables:
-    VERSION: 1.2.0
+
 
 .build:
   stage: build
@@ -25,6 +27,7 @@ master:
   only:
     - master
   variables:
+    <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
   artifacts:
     expire_in: 6 months
@@ -36,6 +39,7 @@ feature-branch:
   except:
     - master
   variables:
+    <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
   artifacts:
     expire_in: 1 day
@@ -79,5 +83,6 @@ release:
   only:
     - /v\d+\.\d+\.\d+/
   variables:
+    <<: *global-variables
     GITHUB_RELEASE_TAG: $CI_COMMIT_TAG
     GITHUB_API_URL: https://api.github.com
