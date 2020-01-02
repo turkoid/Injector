@@ -1,6 +1,6 @@
 stages:
   - build
-  - release
+  - deploy
 
 variables: &global-variables
   VERSION: 1.2.0
@@ -25,29 +25,38 @@ master:
   extends: .build
   only:
     - master
-    - /v\d+\.\d+\.\d+/
   variables:
-    <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.win64.zip    
   artifacts:
     expire_in: 6 months
 
-feature-branch:
+dev:
   extends: .build
   only:
     - branches
   except:
     - master
+    - test-release-job
   variables:
-    <<: *global-variables
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
   artifacts:
     expire_in: 1 day
 
+release:
+  extends: .build
+  only: 
+    - /v\d+\.\d+\.\d+/
+  except:
+    - branches
+  variables:
+    INJECTOR_ARCHIVE: injector-$CI_COMMIT_TAG+$CI_PIPELINE_IID.win64.zip    
+  artifacts:
+    expire_in: 1 month    
+
 .create_changelog_fragment: &create_changelog_fragment  
   - |
     # Parse changelog
-    fragment_start="## $GITHUB_RELEASE_TAG"
+    fragment_start="## $CI_COMMIT_TAG"
     fragment_end="## v"
     sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
   - cat changelog_fragment
@@ -55,9 +64,17 @@ feature-branch:
 .create_github_release: &update_github_release
   - |
     # Create release
-    data=$(jq -n --arg tag_name "$GITHUB_RELEASE_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
-    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" --data "$data" $GITHUB_API_URL/repos/turkoid/Injector/releases >response
-    cat response
+    #
+    url=$GITHUB_API_URL/repos/turkoid/Injector/releases
+    headers='-H "Accept: application/vnd.github.v3+json"'
+    headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'    
+    data=$(jq -n --arg tag_name "$CI_COMMIT_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
+    opts='-s -w "%{http_code}" -o response'
+    rc=$(eval curl $opts $headers --data "$data" $url)
+    if [ $rc -ne 201 ]; then
+      cat response | jq .
+      return 1
+    fi    
     upload_url=$(cat response | jq .upload_url)
     upload_url=${upload_url%\{*}
     upload_url=${upload_url#\"}
@@ -66,14 +83,23 @@ feature-branch:
 .upload_release_artifacts: &upload_release_artifacts
   - |
     # Upload release artifacts
-    artifact="injector-$VERSION+$CI_PIPELINE_IID.win64.zip"
-    curl -s -H "Authorization: token $GITHUB_API_TOKEN" -H "Accept: application/vnd.github.v3+json" -H "Content-Type: application/zip" --data-binary @$artifact $upload_url?name=$(basename $artifact) >response
-    cat response
+    #
+    artifact="injector-$CI_COMMIT_TAG+$CI_PIPELINE_IID.win64.zip"
+    url=$upload_url?name=$artifact
+    headers='-H "Accept: application/vnd.github.v3+json"'
+    headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
+    headers=$headers' -H "Content-Type: application/zip"'
+    opts='-s -w "%{http_code}" -o response'
+    rc=$(eval curl $opts $headers --data "$data" $url)
+    if [ $rc -ne 201 ]; then
+      cat response | jq .
+      return 1
+    fi   
     download_url=$(cat response | jq .browser_download_url)
   - echo $download_url
 
-release:
-  stage: release
+github-release:
+  stage: deploy
   extends: .default
   before_script:
     - apk add jq curl zip
@@ -83,7 +109,32 @@ release:
     - *upload_release_artifacts
   only:
     - /v\d+\.\d+\.\d+/
+  except:
+    - branches
   variables:
-    <<: *global-variables
-    GITHUB_RELEASE_TAG: v$VERSION
     GITHUB_API_URL: https://api.github.com
+
+injector-file-bundles:
+  stage: deploy
+  extends: .default
+  only:
+    - /v\d+\.\d+\.\d+/
+    - test-release-job
+  except:
+    - branches
+  script:
+    - |
+      url=https://gitlab.example.com/api/v4/projects/$INJECTOR_CONFIG_PROJECT_ID/pipelines
+      form_data='-F "token=$CI_JOB_TOKEN"'
+      form_data=$form_data' -F "ref=master"'
+      form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$RELEASE_TAG"'
+      opts='-s -w "%{http_code}" -o response -X POST'
+      rc=$(eval curl $opts $form_data $url)
+      if [ $rc -ne 201 ]; then
+        cat response | jq .
+        return 1
+      fi   
+  variables:
+    RELEASE_TAG: v1.0.12
+    INJECTOR_CONFIG_PROJECT_ID: 16080290
+    
