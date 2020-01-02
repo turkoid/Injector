@@ -139,12 +139,11 @@ injector_file_bundles:
       # Trigger downstream pipeline
       #
       url=https://gitlab.com/api/v4/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
-      echo $CI_JOB_TOKEN
       form_data='-F "token=$CI_JOB_TOKEN"'
       form_data=$form_data' -F "ref=test_gitlab_masking"'
-      form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$RELEASE_TAG"'
+      form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$RELEASE_TAG"'      
+      form_data=$form_data' -F "variables[INJECTOR_ARCHIVE]=$INJECTOR_ARCHIVE"'
       opts='-s -w "%{http_code}" -o response -X POST'
-      eval echo "curl $opts $form_data $url"
       rc=$(eval curl $opts $form_data $url)
       if [ $rc -ne 201 ]; then
         echo http_code=$rc
