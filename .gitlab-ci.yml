@@ -4,9 +4,24 @@ stages:
 
 variables: &global-variables
   VERSION: 1.2.0
+  VARS_JSON: variables.$CI_PIPELINE_IID.json
 
-.default:
+default:
+  cache:
+    paths:
+      - $VARS_JSON
+
+.deploy:
+  stage: deploy
   image: alpine:latest
+  only: 
+    - /v\d+\.\d+\.\d+/
+  except: 
+    - branches
+  before_script:
+    - apk add zip unzip jq curl
+  variables: &deploy_variables
+    INJECTOR_ARCHIVE: "$(cat $VARS_JSON | jq .archive_name)"   
 
 .build:
   stage: build
@@ -17,6 +32,10 @@ variables: &global-variables
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
     - "zip -j $INJECTOR_ARCHIVE LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
+    - |
+      # Update archive name var
+      touch $VARS_JSON
+      cat $VARS_JSON | jq '. |= .+ {"archive_name": "$INJECTOR_ARCHIVE"}' >.json; mv .json $VARS_JSON
   artifacts:
     paths:
       - $INJECTOR_ARCHIVE
@@ -36,7 +55,6 @@ dev:
     - branches
   except:
     - master
-    - test-release-job
   variables:
     INJECTOR_ARCHIVE: injector-$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG.win64.zip
   artifacts:
@@ -53,9 +71,12 @@ release:
   artifacts:
     expire_in: 1 month    
 
+
+
 .create_changelog_fragment: &create_changelog_fragment  
   - |
     # Parse changelog
+    #
     fragment_start="## $CI_COMMIT_TAG"
     fragment_end="## v"
     sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
@@ -85,7 +106,7 @@ release:
   - |
     # Upload release artifacts
     #
-    artifact="injector-$CI_COMMIT_TAG+$CI_PIPELINE_IID.win64.zip"
+    artifact="$(cat $VARS_JSON | jq .)"
     url=$upload_url?name=$artifact
     headers='-H "Accept: application/vnd.github.v3+json"'
     headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
@@ -100,32 +121,24 @@ release:
     download_url=$(cat response | jq .browser_download_url)
   - echo $download_url
 
-github-release:
-  stage: deploy
-  extends: .default
-  before_script:
-    - apk add jq curl zip
+github_release:
+  extends: .deploy
   script:
     - *create_changelog_fragment
     - *update_github_release
     - *upload_release_artifacts
-  only:
-    - /v\d+\.\d+\.\d+/
-  except:
-    - branches
   variables:
+    <<: *deploy_variables
     GITHUB_API_URL: https://api.github.com
 
-injector-file-bundles:
-  stage: deploy
-  extends: .default
+injector_file_bundles:
+  extends: .deploy
   only:
-    - /v\d+\.\d+\.\d+/
     - test-release-job
-  before_script:
-    - apk add jq curl zip
   script:
     - |
+      # Trigger downstream pipeline
+      #
       url=https://gitlab.com/api/v4/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
       echo $CI_JOB_TOKEN
       form_data='-F "token=$CI_JOB_TOKEN"'
@@ -140,6 +153,7 @@ injector-file-bundles:
         return 1
       fi   
   variables:
+    <<: *deploy_variables
     RELEASE_TAG: v1.0.12
     INJECTOR_CONFIG_PROJECT_ID: 16080290
     
