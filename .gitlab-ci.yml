@@ -120,6 +120,8 @@ injector-file-bundles:
   only:
     - /v\d+\.\d+\.\d+/
     - test-release-job
+  before_script:
+    - apk add jq curl zip
   script:
     - |
       url=https://gitlab.example.com/api/v4/projects/$INJECTOR_CONFIG_PROJECT_ID/pipelines
