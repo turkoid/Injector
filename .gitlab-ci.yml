@@ -129,7 +129,7 @@ injector-file-bundles:
       url=https://gitlab.com/api/v4/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
       echo $CI_JOB_TOKEN
       form_data='-F "token=$CI_JOB_TOKEN"'
-      form_data=$form_data' -F "ref=master"'
+      form_data=$form_data' -F "ref=test_gitlab_masking"'
       form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$RELEASE_TAG"'
       opts='-s -w "%{http_code}" -o response -X POST'
       eval echo "curl $opts $form_data $url"
