@@ -138,7 +138,7 @@ release:
 
 test-build:
   stage: build
-  image: apline:latest
+  image: alpine:latest
   only:
     - test-release-job
   script:
