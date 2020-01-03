@@ -145,7 +145,7 @@ test_build:
   only:
     - test-release-job
   before_script:
-    - ARCHIVE_NAME=$(eval echo $ARCHIVE_NAME)
+    - export ARCHIVE_NAME=$(eval echo $ARCHIVE_NAME)
   script:
     - echo $(eval echo $SLUG)
     - echo $VERSION
