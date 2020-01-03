@@ -19,7 +19,7 @@ variables: &global_variables
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
   artifacts:
     paths:
-      - injector-$ARCHIVE_VERSION.win64.zip
+      - injector-$ARCHIVE_VERSION.win64.zip2
 
 master:
   extends: .build
@@ -139,6 +139,7 @@ release:
   except:
     - branches
   before_script:
+    - if [ ! -f "$ARCHIVE_NAME" ] echo $ARCHIVE_NAME missing; return 1; fi
     - apk add jq curl
   variables: &deploy_variables
     VERSION: ${CI_COMMIT_TAG:1}
