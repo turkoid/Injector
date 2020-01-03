@@ -13,7 +13,7 @@ variables: &global_variables
   before_script: &build_before_script
     - apk update
     - apk add zip
-    - ARCHIVE_VERSION=$(echo eval $ARCHIVE_VERSION)
+    - ARCHIVE_VERSION=$(eval echo $ARCHIVE_VERSION)
   script:
     - echo build
     # - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
