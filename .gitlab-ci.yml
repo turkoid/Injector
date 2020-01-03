@@ -14,15 +14,14 @@ variables: &global_variables
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - ARCHIVE_NAME=$(eval echo $ARCHIVE_NAME)
+    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
     - echo $ARCHIVE_NAME
   variables: &build_variables
     <<: *global_variables
-    ARCHIVE_NAME: injector-$ARCHIVE_VERSION.win64.zip
   artifacts:
     paths:
-      - injector-$ARCHIVE_VERSION.win64.zip
+      - injector-*.zip
 
 master:
   extends: .build
@@ -138,14 +137,13 @@ release:
     fi
   - echo $download_url
 
-
 test_build:
   stage: build
   image: alpine:latest
   only:
     - test-release-job
   before_script:
-    - export ARCHIVE_NAME=$(eval echo $ARCHIVE_NAME)
+    - export ARCHIVE_NAME=injector-$ARCHIVE_VERSION
   script:
     - echo $(eval echo $SLUG)
     - echo $VERSION
@@ -158,7 +156,7 @@ test_build:
     SLUG: ${VERSION:1:2}
   artifacts:
     paths:
-      - $CI_JOB_ID.zip
+      - injector-*.zip
 
 .deploy:
   stage: deploy
@@ -167,11 +165,12 @@ test_build:
     - /v\d+\.\d+\.\d+/
   except:
   before_script:
+    - export VERSION=${CI_COMMIT_TAG:1}
+    - export ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
     - if [ ! -f "$ARCHIVE_NAME" ]; then echo $ARCHIVE_NAME missing; return 1; fi
     - apk add jq curl
   variables: &deploy_variables
-    VERSION: ${CI_COMMIT_TAG:1}
-    ARCHIVE_NAME: $(ls -1 | grep -m1 injector-$VERSION.*\.zip)
+    <<: *global_variables
 
 github_release:
   extends: .deploy
