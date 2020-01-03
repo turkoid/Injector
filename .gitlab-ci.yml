@@ -137,6 +137,9 @@ test_build:
   only:
     - test-release-job
   script: touch injector-1.2.0+000.dev.win64.zip
+  artifacts:
+    paths:
+      - injector-1.2.0+000.dev.win64.zip
 
 .deploy:
   stage: deploy
