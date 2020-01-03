@@ -152,7 +152,7 @@ release:
       echo list contents
       ls -1
       echo -----
-      touch injector-$VERSION.win64.zip
+      # touch injector-$VERSION.win64.zip
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
       echo 0000000
       echo $ARCHIVE_NAME
@@ -161,6 +161,7 @@ release:
         echo $ARCHIVE_NAME missing
         return 1
       fi
+      echo DEFAULT
       return 1
     - apk add jq curl
   variables: &deploy_variables
