@@ -112,8 +112,7 @@ release:
       fi
       release_id=$(cat response | jq .id)
       upload_url=$(cat response | jq .upload_url)
-      upload_url=${upload_url%\{*}
-      upload_url=${upload_url#\"}
+      upload_url=${upload_url:1:-1}
     fi
   - echo release_id=$release_id
   - echo upload_url=$upload_url
@@ -136,6 +135,7 @@ release:
         return 1
       fi
       download_url=$(cat response | jq .browser_download_url)
+      download_url=${download_url:1:-1}
     fi
   - echo download_url=$download_url
 
@@ -181,7 +181,7 @@ injector_file_bundles:
       #
       url=$GITLAB_API_URL/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
       form_data='-F "token=$CI_JOB_TOKEN"'
-      form_data=$form_data' -F "ref=test_gitlab_masking"'
+      form_data=$form_data' -F "ref=master"'
       form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$CI_COMMIT_TAG"'
       form_data=$form_data' -F "variables[INJECTOR_ARCHIVE_NAME]=$ARCHIVE_NAME"'
       opts='-s -w "%{http_code}" -o response -X POST'
