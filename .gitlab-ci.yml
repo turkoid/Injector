@@ -147,6 +147,8 @@ release:
     - |
       # Verify artifacts
       #
+      apk update
+      apk add grep
       VERSION=${CI_COMMIT_TAG:1}
       echo version=$VERSION
       echo list contents
@@ -155,6 +157,7 @@ release:
       # touch injector-$VERSION.win64.zip
       echo "injector-$VERSION.*.zip"
       contents=$(ls -1)
+      grep --help
       ls -1 | grep zip
       echo hello world
       ls -1 | grep -m 1 zip
