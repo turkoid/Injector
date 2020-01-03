@@ -120,7 +120,6 @@ release:
     # Upload release artifacts
     #
     if [ ! -z "$download_url" ]; then
-      archive_name=
       url=$upload_url?name=$ARCHIVE_NAME
       headers='-H "Accept: application/vnd.github.v3+json"'
       headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
@@ -137,45 +136,16 @@ release:
     fi
   - echo $download_url
 
-test_build:
-  stage: build
-  image: alpine:latest
-  only:
-    - test-release-job
-  before_script:
-    - export VERSION=${CI_COMMIT_TAG:1}
-    - export ARCHIVE_NAME=injector-$VERSION.win64.zip
-    - touch $ARCHIVE_NAME
-    - export ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
-  script:
-    - echo $VERSION
-    - echo $ARCHIVE_VERSION
-    - echo $ARCHIVE_NAME
-    - touch $ARCHIVE_NAME
-  variables:
-    <<: *build_variables
-  artifacts:
-    paths:
-      - injector-*.zip
-    expire_in: 1 second
-
-test_deploy:
-  stage: deploy
-  image: alpine:latest
-  only:
-    - test-release-job
-  script:
-    - echo $ARCHIVE_NAME
-
 .deploy:
   stage: deploy
   image: alpine:latest
   only:
     - /v\d+\.\d+\.\d+/
+    - test-only-branch
   except:
   before_script:
-    - export VERSION=${CI_COMMIT_TAG:1}
-    - export ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
+    - VERSION=${CI_COMMIT_TAG:1}
+    - ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
     - if [ ! -f "$ARCHIVE_NAME" ]; then echo $ARCHIVE_NAME missing; return 1; fi
     - apk add jq curl
   variables: &deploy_variables
