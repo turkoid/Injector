@@ -15,7 +15,7 @@ variables: &global_variables
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
+    - ARCHIVE_NAME=$(eval echo injector-$ARCHIVE_VERSION.win64.zip)
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
     - echo $ARCHIVE_NAME
   variables: &build_variables
