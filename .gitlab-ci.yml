@@ -38,7 +38,6 @@ dev:
   only:
     - branches
   except:
-    - test-release-job
     - master
   variables:
     <<: *build_variables
@@ -141,7 +140,7 @@ release:
   image: alpine:latest
   only:
     - /v\d+\.\d+\.\d+/
-    - test-only-branch
+    - test-release-job
   except:
   before_script:
     - VERSION=${CI_COMMIT_TAG:1}
