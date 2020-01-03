@@ -6,16 +6,17 @@ variables: &global_variables
   VERSION: 1.2.0
   CI_COMMIT_TAG: v1.2.0
 
+
 .build:
   stage: build
   image: mcr.microsoft.com/dotnet/core/sdk:3.1-alpine
-  before_script:
+  before_script: &build_before_script
     - apk update
     - apk add zip
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - ARCHIVE_NAME=$(eval echo injector-$ARCHIVE_VERSION.win64.zip)
+    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
     - echo $ARCHIVE_NAME
   variables: &build_variables
@@ -26,16 +27,21 @@ variables: &global_variables
 
 master:
   extends: .build
+  before_script:
+    <<: *build_before_script
+    - ARCHIVE_VERSION=$VERSION+$CI_PIPELINE_IID
   only:
     - master
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: $VERSION+$CI_PIPELINE_IID
   artifacts:
     expire_in: 6 months
 
 dev:
   extends: .build
+  before_script:
+    <<: *build_before_script
+    - ARCHIVE_VERSION=$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG
   only:
     - branches
   except:
@@ -43,19 +49,20 @@ dev:
     - test-release-job
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: $VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG
   artifacts:
     expire_in: 1 day
 
 release:
   extends: .build
+  before_script:
+    <<: *build_before_script
+    - ARCHIVE_VERSION=${CI_COMMIT_TAG:1}
   only:
     - /v\d+\.\d+\.\d+/
     - test-release-job
   except:
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: ${CI_COMMIT_TAG:1}
   artifacts:
     expire_in: 1 month
 
