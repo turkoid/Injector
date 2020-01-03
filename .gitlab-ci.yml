@@ -78,7 +78,7 @@ release:
     url=$GITHUB_API_URL/repos/turkoid/Injector/releases/tags/$CI_COMMIT_TAG
     headers='-H "Accept: application/vnd.github.v3+json"'
     opts='-s -w "%{http_code}" -o response'
-    echo "curl $opts $headers $url"
+    echo curl $opts $headers $url
     rc=$(eval curl $opts $headers $url)
       echo http_code=$rc
     if [ $rc -eq 200 ]; then
@@ -104,9 +104,9 @@ release:
       url=$GITHUB_API_URL/repos/turkoid/Injector/releases
       headers='-H "Accept: application/vnd.github.v3+json"'
       headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
-      data=$(jq -n --arg tag_name "$CI_COMMIT_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
+      data=$(jq -n -c --arg tag_name "$CI_COMMIT_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
       opts='-s -w "%{http_code}" -o response'
-      # echo "curl $opts $headers --data \"$data\" $url"
+      echo curl $opts $headers --data "$data" $url
       rc=$(eval curl $opts $headers --data "$data" $url)
       echo http_code=$rc
       if [ $rc -ne 201 ]; then
@@ -129,8 +129,8 @@ release:
       headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
       headers=$headers' -H "Content-Type: application/zip"'
       opts='-s -w "%{http_code}" -o response'
-      # echo "curl $opts $headers --data \"$data\" $url"
-      rc=$(eval curl $opts $headers --data "$data" $url)
+      echo curl $opts $headers --data-binary @ARCHIVE_NAME $url
+      rc=$(eval curl $opts $headers --data-binary @ARCHIVE_NAME $url)
       echo http_code=$rc
       if [ $rc -ne 201 ]; then
         cat response | jq .
