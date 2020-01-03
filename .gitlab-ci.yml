@@ -138,6 +138,7 @@ release:
     - /v\d+\.\d+\.\d+/
     - test-release-job
   except:
+    - branches
   before_script:
     - apk add jq curl
   variables: &deploy_variables
