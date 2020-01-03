@@ -14,9 +14,11 @@ variables: &global_variables
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
+    - ARCHIVE_NAME=
     - echo $ARCHIVE_NAME
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
+  variables:
+    ARCHIVE_NAME: injector-$ARCHIVE_VERSION.win64.zip
   artifacts:
     paths:
       - injector-$ARCHIVE_VERSION.win64.zip2
@@ -136,10 +138,12 @@ test_build:
   image: alpine:latest
   only:
     - test-release-job
-  script: touch injector-1.2.0+000.dev.win64.zip
+  script: touch $ARCHIVE_NAME
+  variables:
+    ARCHIVE_NAME: injector-$VERSION.dev.win64.zip
   artifacts:
     paths:
-      - injector-1.2.0+000.dev.win64.zip
+      - $ARCHIVE_NAME
 
 .deploy:
   stage: deploy
