@@ -16,9 +16,9 @@ variables: &global_variables
   after_script:
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
     - echo $ARCHIVE_NAME
-  variables:
+  variables: &build_variables
     ARCHIVE_NAME: injector-$ARCHIVE_VERSION.win64.zip
-  artifacts: &build_variables
+  artifacts:
     paths:
       - injector-$ARCHIVE_VERSION.win64.zip2
 
