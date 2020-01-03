@@ -4,7 +4,7 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
-  CI_COMMIT_TAG: v1.2.0
+  CI_COMMIT_TAG: v1.3.0
 
 .build:
   stage: build
@@ -143,17 +143,17 @@ test_build:
   only:
     - test-release-job
   before_script:
-    - export ARCHIVE_NAME=injector-$ARCHIVE_VERSION
+    - export VERSION=${CI_COMMIT_TAG:1}
+    - export ARCHIVE_NAME=injector-$VERSION.win64.zip
+    - touch $ARCHIVE_NAME
+    - export ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
   script:
-    - echo $(eval echo $SLUG)
     - echo $VERSION
     - echo $ARCHIVE_VERSION
     - echo $ARCHIVE_NAME
     - touch $ARCHIVE_NAME
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: $VERSION.dev.win64
-    SLUG: ${VERSION:1:2}
   artifacts:
     paths:
       - injector-*.zip
