@@ -39,6 +39,7 @@ dev:
     - branches
   except:
     - master
+    - test-release-job
   variables:
     <<: *build_variables
     ARCHIVE_VERSION: $VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG
@@ -147,6 +148,8 @@ release:
       # Verify artifacts
       #
       VERSION=${CI_COMMIT_TAG:1}
+      echo $VERSION
+      touch injector-$VERSION.win64.zip
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
       echo $ARCHIVE_NAME
       if [ ! -f "$ARCHIVE_NAME" ]; then
@@ -169,6 +172,8 @@ github_release:
 
 injector_file_bundles:
   extends: .deploy
+  except:
+    - branches
   script:
     - |
       # Trigger downstream pipeline
