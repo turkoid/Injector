@@ -99,6 +99,7 @@ release:
   - |
     # Create release
     #
+    echo upload_url=$upload_url
     if [ ! -z "$upload_url" ]; then
       url=$GITHUB_API_URL/repos/turkoid/Injector/releases
       headers='-H "Accept: application/vnd.github.v3+json"'
