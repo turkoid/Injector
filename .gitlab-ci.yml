@@ -153,7 +153,9 @@ release:
       ls -1
       echo -----
       # touch injector-$VERSION.win64.zip
-      ARCHIVE_NAME=$(ls -1 | grep -m1 "injector-$VERSION.*\.zip")
+      echo "injector-$VERSION.*.zip"
+      contents=$(ls -1)
+      ARCHIVE_NAME=$(ls -1 | grep -m1 "injector-$VERSION.*.zip")
       echo 0000000
       echo $ARCHIVE_NAME
       echo 0000000
