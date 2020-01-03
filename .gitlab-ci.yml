@@ -141,7 +141,12 @@ test_build:
   image: alpine:latest
   only:
     - test-release-job
-  script: touch $ARCHIVE_NAME
+  script:
+    - echo $SLUG
+    - echo $VERSION
+    - echo $ARCHIVE_VERSION
+    - echo $ARCHIVE_NAME
+    - touch $ARCHIVE_NAME
   variables:
     <<: *build_variables
     ARCHIVE_VERSION: $VERSION.dev.win64
@@ -158,8 +163,6 @@ test_build:
     - /v\d+\.\d+\.\d+/
   except:
   before_script:
-    - echo $VERSION
-    - echo $ARCHIVE_NAME
     - if [ ! -f "$ARCHIVE_NAME" ]; then echo $ARCHIVE_NAME missing; return 1; fi
     - apk add jq curl
   variables: &deploy_variables
