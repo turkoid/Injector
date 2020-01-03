@@ -61,7 +61,7 @@ release:
   except:
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: '${CI_COMMIT_TAG:1}'
+    ARCHIVE_VERSION: 'asdf'
   artifacts:
     expire_in: 1 month
 
