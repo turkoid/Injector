@@ -158,7 +158,7 @@ release:
       echo "injector-$VERSION.*.zip"
       contents=$(ls -1)
       grep --help
-      ls -1 | grep zip
+      grep 'zip' contents
       echo hello world
       ls -1 | grep -m 1 zip
       echo boom time
