@@ -282,7 +282,7 @@ namespace Injector {
             return process;
         }
 
-        private Boolean IsDllLoaded(Process process, FileInfo dll) {
+        private bool IsDllLoaded(Process process, FileInfo dll) {
             process.Refresh();
             foreach (ProcessModule processModule in process.Modules) {
                 if (processModule.FileName.Equals(dll.FullName, StringComparison.OrdinalIgnoreCase)) {
