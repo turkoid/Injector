@@ -148,11 +148,15 @@ release:
       # Verify artifacts
       #
       VERSION=${CI_COMMIT_TAG:1}
-      echo $VERSION
+      echo version=$VERSION
+      echo list contents
       ls -1
+      echo -----
       touch injector-$VERSION.win64.zip
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
+      echo 0000000
       echo $ARCHIVE_NAME
+      echo 0000000
       if [ ! -f "$ARCHIVE_NAME" ]; then
         echo $ARCHIVE_NAME missing
         return 1
