@@ -35,6 +35,7 @@ dev:
   only:
     - branches
   except:
+    - test-release-job
     - master
   variables:
     ARCHIVE_VERSION: $VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG
@@ -130,6 +131,13 @@ release:
     fi
   - echo $download_url
 
+test_build:
+  stage: build
+  image: alpine:latest
+  only:
+    - test-release-job
+  script: touch injector-1.2.0+000.dev.win64.zip
+
 .deploy:
   stage: deploy
   image: alpine:latest
@@ -138,6 +146,8 @@ release:
     - test-release-job
   except:
   before_script:
+    - echo $VERSION
+    - echo $ARCHIVE_NAME
     - if [ ! -f "$ARCHIVE_NAME" ]; then echo $ARCHIVE_NAME missing; return 1; fi
     - apk add jq curl
   variables: &deploy_variables
