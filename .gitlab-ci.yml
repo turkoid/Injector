@@ -19,7 +19,7 @@ variables: &global_variables
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
     - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
-    - echo $ARCHIVE_NAME
+    - echo archive_name=$ARCHIVE_NAME
   after_script:
   variables: &build_variables
     <<: *global_variables
@@ -99,12 +99,11 @@ release:
   - |
     # Create release
     #
-    echo upload_url=$upload_url
     if [ -z "$upload_url" ]; then
       url=$GITHUB_API_URL/repos/turkoid/Injector/releases
       headers='-H "Accept: application/vnd.github.v3+json"'
       headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
-      data=$(jq -n -c --arg tag_name "$CI_COMMIT_TAG" --arg body '$(cat changelog_fragment)' '{"tag_name": $tag_name, "body": $body}')
+      data=$(jq -n -c --arg tag_name "$CI_COMMIT_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
       opts='-s -w "%{http_code}" -o response'
       # echo curl $opts $headers --data "$data" $url
       rc=$(eval curl $opts $headers --data "$data" $url)
@@ -117,7 +116,7 @@ release:
       upload_url=${upload_url%\{*}
       upload_url=${upload_url#\"}
     fi
-  - echo $upload_url
+  - echo upload_url=$upload_url
 
 .upload_release_artifacts: &upload_release_artifacts
   - |
@@ -138,7 +137,7 @@ release:
       fi
       download_url=$(cat response | jq .browser_download_url)
     fi
-  - echo $download_url
+  - echo download_url=$download_url
 
 .deploy:
   stage: deploy
