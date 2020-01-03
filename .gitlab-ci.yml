@@ -137,7 +137,6 @@ release:
     - /v\d+\.\d+\.\d+/
     - test-release-job
   except:
-    - branches
   before_script:
     - if [ ! -f "$ARCHIVE_NAME" ] echo $ARCHIVE_NAME missing; return 1; fi
     - apk add jq curl
