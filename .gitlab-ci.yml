@@ -148,10 +148,10 @@ test_build:
     - echo $ARCHIVE_NAME
     - touch $ARCHIVE_NAME
   variables:
-    <<: *build_variables
     ARCHIVE_VERSION: $VERSION.dev.win64
     VERSION: after
     SLUG: ${VERSION:1:2}
+    <<: *build_variables
   artifacts:
     paths:
       - $ARCHIVE_NAME
