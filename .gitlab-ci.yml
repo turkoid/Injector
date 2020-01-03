@@ -156,7 +156,7 @@ release:
       echo -----
       # touch injector-$VERSION.win64.zip
       echo "injector-$VERSION.*.zip"
-      contents=$(ls -1)
+      ls -1 >contents
       grep --help
       grep 'zip' contents
       echo hello world
