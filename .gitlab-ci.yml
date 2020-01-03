@@ -138,6 +138,7 @@ release:
 
 test_build:
   stage: build
+  image: alpine:latest
   only:
     - test-release-job
   script: touch $ARCHIVE_NAME
