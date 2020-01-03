@@ -58,10 +58,8 @@ release:
   extends: .build
   before_script:
     - *build_before_script
-    - echo $CI_COMMIT_TAG
-    - echo ${CI_COMMIT_TAG:1}
-    - echo -----
-    - ARCHIVE_VERSION=${CI_COMMIT_TAG:1}
+    - echo slug=$SLUG
+    - export ARCHIVE_VERSION=${CI_COMMIT_TAG:1}
     - echo aver=$ARCHIVE_VERSION
   only:
     - /v\d+\.\d+\.\d+/
@@ -69,6 +67,7 @@ release:
   except:
   variables:
     <<: *build_variables
+    SLUG: ${CI_COMMIT_TAG:1}
   artifacts:
     expire_in: 1 month
 
