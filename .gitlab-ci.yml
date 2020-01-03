@@ -14,12 +14,11 @@ variables: &global_variables
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - ARCHIVE_NAME=
-    - echo $ARCHIVE_NAME
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
+    - echo $ARCHIVE_NAME
   variables:
     ARCHIVE_NAME: injector-$ARCHIVE_VERSION.win64.zip
-  artifacts:
+  artifacts: &build_variables
     paths:
       - injector-$ARCHIVE_VERSION.win64.zip2
 
@@ -28,6 +27,7 @@ master:
   only:
     - master
   variables:
+    <<: *build_variables
     ARCHIVE_VERSION: $VERSION+$CI_PIPELINE_IID
   artifacts:
     expire_in: 6 months
@@ -40,6 +40,7 @@ dev:
     - test-release-job
     - master
   variables:
+    <<: *build_variables
     ARCHIVE_VERSION: $VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG
   artifacts:
     expire_in: 1 day
@@ -51,6 +52,7 @@ release:
   except:
     - branches
   variables:
+    <<: *build_variables
     VERSION: ${CI_COMMIT_TAG:1}
     ARCHIVE_VERSION: $VERSION
   artifacts:
@@ -136,13 +138,14 @@ release:
 
 test_build:
   stage: build
-  image: alpine:latest
   only:
     - test-release-job
   script: touch $ARCHIVE_NAME
   variables:
-    ARCHIVE_NAME: injector-$VERSION.dev.win64.zip
+    <<: *build_variables
+    ARCHIVE_VERSION: $VERSION.dev.win64
     VERSION: after
+    SLUG: ${VERSION:1:2}
   artifacts:
     paths:
       - $ARCHIVE_NAME
@@ -152,7 +155,6 @@ test_build:
   image: alpine:latest
   only:
     - /v\d+\.\d+\.\d+/
-    - test-release-job
   except:
   before_script:
     - echo $VERSION
