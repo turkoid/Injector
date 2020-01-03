@@ -143,9 +143,16 @@ release:
     - test-release-job
   except:
   before_script:
-    - VERSION=${CI_COMMIT_TAG:1}
-    - ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
-    - if [ ! -f "$ARCHIVE_NAME" ]; then echo $ARCHIVE_NAME missing; return 1; fi
+    - |
+      # Verify artifacts
+      #
+      VERSION=${CI_COMMIT_TAG:1}
+      ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
+      echo $ARCHIVE_NAME
+      if [ ! -f "$ARCHIVE_NAME" ]; then
+        echo $ARCHIVE_NAME missing
+        return 1
+      fi
     - apk add jq curl
   variables: &deploy_variables
     <<: *global_variables
