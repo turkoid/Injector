@@ -80,9 +80,9 @@ release:
     if [ $rc -eq 200 ]; then
       release_id=$(cat response | jq .id)
       upload_url=$(cat response | jq .upload_url)
-      upload_url=${upload_url%\{*}
-      upload_url=${upload_url#\"}
+      upload_url=${upload_url:1:-1}
       download_url=$(cat response | jq .assets[0].browser_download_url)
+      download_url=${download_url:1:-1}
       echo Release already exists
     elif [ $rc -eq 404 ]; then
       release_id=
