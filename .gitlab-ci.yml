@@ -17,10 +17,9 @@ variables: &global_variables
     - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
     - echo $ARCHIVE_NAME
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
-  variables:
   artifacts:
     paths:
-      - $ARCHIVE_NAME
+      - injector-$ARCHIVE_VERSION.win64.zip
 
 master:
   extends: .build
