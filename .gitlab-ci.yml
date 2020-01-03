@@ -133,6 +133,7 @@ release:
     fi
   - echo $download_url
 
+
 test_build:
   stage: build
   image: alpine:latest
@@ -141,6 +142,7 @@ test_build:
   script: touch $ARCHIVE_NAME
   variables:
     ARCHIVE_NAME: injector-$VERSION.dev.win64.zip
+    VERSION: after
   artifacts:
     paths:
       - $ARCHIVE_NAME
