@@ -4,8 +4,6 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
-  CI_COMMIT_TAG: v1.2.0
-
 
 .build:
   stage: build
@@ -15,9 +13,8 @@ variables: &global_variables
     - apk add zip
     - ARCHIVE_VERSION=$(eval echo $ARCHIVE_VERSION)
   script:
-    - echo build
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
-    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
+    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION-win64.zip
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
     - echo archive_name=$ARCHIVE_NAME
   after_script:
@@ -33,7 +30,7 @@ master:
     - master
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: '$VERSION+$CI_PIPELINE_IID'
+    ARCHIVE_VERSION: '$VERSION-$CI_PIPELINE_IID'
   artifacts:
     expire_in: 6 months
 
@@ -43,10 +40,9 @@ dev:
     - branches
   except:
     - master
-    - test-release-job
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: '$VERSION+$CI_PIPELINE_IID.$CI_COMMIT_REF_SLUG'
+    ARCHIVE_VERSION: '$CI_COMMIT_REF_SLUG-$CI_PIPELINE_IID'
   artifacts:
     expire_in: 1 day
 
@@ -54,7 +50,6 @@ release:
   extends: .build
   only:
     - /v\d+\.\d+\.\d+/
-    # - test-release-job
   except:
   variables:
     <<: *build_variables
@@ -87,7 +82,7 @@ release:
       upload_url=${upload_url%\{*}
       upload_url=${upload_url#\"}
       download_url=$(cat response | jq .assets[0].browser_download_url)
-      echo Release exists
+      echo Release already exists
     elif [ $rc -eq 404 ]; then
       release_id=
       upload_url=
@@ -148,14 +143,13 @@ release:
   image: alpine:latest
   only:
     - /v\d+\.\d+\.\d+/
-    - test-release-job
   except:
+    - branches
   before_script:
     - |
       # Verify artifacts
       #
       VERSION=${CI_COMMIT_TAG:1}
-      touch injector-$VERSION.win64.zip
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*.zip || true)
       if [ ! -f "$ARCHIVE_NAME" ]; then
         ls -1
@@ -180,8 +174,6 @@ github_release:
 
 injector_file_bundles:
   extends: .deploy
-  except:
-    - branches
   script:
     - |
       # Trigger downstream pipeline
@@ -194,8 +186,8 @@ injector_file_bundles:
       opts='-s -w "%{http_code}" -o response -X POST'
       echo curl $opts $form_data $url
       rc=$(eval curl $opts $form_data $url)
+      echo http_code=$rc
       if [ $rc -ne 201 ]; then
-        echo http_code=$rc
         cat response | jq .
         return 1
       fi
