@@ -155,6 +155,8 @@ release:
       # touch injector-$VERSION.win64.zip
       echo "injector-$VERSION.*.zip"
       contents=$(ls -1)
+      ls -1 | grep -m1 zip
+      echo boom time
       ARCHIVE_NAME=$(ls -1 | grep -m1 "injector-$VERSION.*.zip")
       echo 0000000
       echo $ARCHIVE_NAME
