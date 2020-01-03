@@ -54,7 +54,7 @@ release:
   extends: .build
   only:
     - /v\d+\.\d+\.\d+/
-    - test-release-job
+    # - test-release-job
   except:
   variables:
     <<: *build_variables
@@ -152,6 +152,7 @@ release:
       # Verify artifacts
       #
       VERSION=${CI_COMMIT_TAG:1}
+      touch injector-$VERSION.win64.zip
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*.zip || true)
       if [ ! -f "$ARCHIVE_NAME" ]; then
         ls -1
