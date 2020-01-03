@@ -51,7 +51,7 @@ release:
   only:
     - /v\d+\.\d+\.\d+/
   except:
-    branches
+    - branches
   variables:
     <<: *build_variables
     ARCHIVE_VERSION: '$${CI_COMMIT_TAG:1}'
