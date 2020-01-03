@@ -14,10 +14,12 @@ variables: &global_variables
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
-    - "zip -j injector-$ARCHIVE_VERSION.win64.zip LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
+    - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
+    - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
+  variables:
   artifacts:
     paths:
-      - $INJECTOR_ARCHIVE
+      - $ARCHIVE_NAME
 
 master:
   extends: .build
