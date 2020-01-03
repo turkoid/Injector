@@ -157,6 +157,15 @@ test_build:
   artifacts:
     paths:
       - injector-*.zip
+    expire_in: 1 second
+
+test_deploy:
+  stage: deploy
+  image: alpine:latest
+  only:
+    - test-release-job
+  script:
+    - echo $ARCHIVE_NAME
 
 .deploy:
   stage: deploy
