@@ -4,7 +4,7 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
-  CI_COMMIT_TAG: v1.3.0
+  CI_COMMIT_TAG: v1.2.0
 
 .build:
   stage: build
@@ -50,12 +50,12 @@ release:
   extends: .build
   only:
     - /v\d+\.\d+\.\d+/
+    - test-release-job
   except:
     - branches
   variables:
     <<: *build_variables
-    VERSION: ${CI_COMMIT_TAG:1}
-    ARCHIVE_VERSION: $VERSION
+    ARCHIVE_VERSION: ${CI_COMMIT_TAG:1}
   artifacts:
     expire_in: 1 month
 
@@ -136,19 +136,6 @@ release:
     fi
   - echo $download_url
 
-test-build:
-  stage: build
-  image: alpine:latest
-  only:
-    - test-release-job
-  script:
-    - VERSION=${CI_COMMIT_TAG:1}
-    - touch injector-$VERSION.win64.zip
-  artifacts:
-    paths:
-      - injector-*.zip
-    expire_in: 1 hour
-
 .deploy:
   stage: deploy
   image: alpine:latest
@@ -161,9 +148,6 @@ test-build:
       # Verify artifacts
       #
       VERSION=${CI_COMMIT_TAG:1}
-      echo $VERSION
-      # touch injector-$VERSION.win64.zip
-      ls -1
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*\.zip)
       echo $ARCHIVE_NAME
       if [ ! -f "$ARCHIVE_NAME" ]; then
