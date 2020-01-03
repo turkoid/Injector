@@ -53,7 +53,6 @@ release:
     - /v\d+\.\d+\.\d+/
     - test-release-job
   except:
-    - branches
   variables:
     <<: *build_variables
     ARCHIVE_VERSION: ${CI_COMMIT_TAG:1}
@@ -152,10 +151,10 @@ release:
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*.zip || true)
       if [ ! -f "$ARCHIVE_NAME" ]; then
         ls -1
-        echo "injector-$VERSION.*.zip missing"
+        echo "ERROR: injector-$VERSION.*.zip missing"
         return 1
       fi
-      return 1
+    - apk update
     - apk add jq curl
   variables: &deploy_variables
     <<: *global_variables
