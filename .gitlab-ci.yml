@@ -13,14 +13,16 @@ variables: &global_variables
   before_script: &build_before_script
     - apk update
     - apk add zip
+    - echo before=$ARCHIVE_VERSION
     - ARCHIVE_VERSION=$(eval echo $ARCHIVE_VERSION)
+    - echo after=$ARCHIVE_VERSION
   script:
     - echo build
     # - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
-    - echo $ARCHIVE_VERSION
+    - echo script_ver=$ARCHIVE_VERSION
     - ARCHIVE_NAME=injector-$ARCHIVE_VERSION.win64.zip
     # - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
-    - echo $ARCHIVE_NAME
+    - echo script_name$ARCHIVE_NAME
   after_script:
   variables: &build_variables
     <<: *global_variables
