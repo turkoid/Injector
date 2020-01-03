@@ -14,9 +14,11 @@ variables: &global_variables
   script:
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
   after_script:
+    - ARCHIVE_NAME=$(eval echo $ARCHIVE_NAME)
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
     - echo $ARCHIVE_NAME
   variables: &build_variables
+    <<: *global_variables
     ARCHIVE_NAME: injector-$ARCHIVE_VERSION.win64.zip
   artifacts:
     paths:
@@ -119,6 +121,7 @@ release:
     # Upload release artifacts
     #
     if [ ! -z "$download_url" ]; then
+      archive_name=
       url=$upload_url?name=$ARCHIVE_NAME
       headers='-H "Accept: application/vnd.github.v3+json"'
       headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
@@ -141,17 +144,18 @@ test_build:
   image: alpine:latest
   only:
     - test-release-job
+  before_script:
+    - ARCHIVE_NAME=$(eval echo $ARCHIVE_NAME)
   script:
-    - echo $SLUG
+    - echo $(eval echo $SLUG)
     - echo $VERSION
     - echo $ARCHIVE_VERSION
     - echo $ARCHIVE_NAME
     - touch $ARCHIVE_NAME
   variables:
-    VERSION: after
+    <<: *build_variables
     ARCHIVE_VERSION: $VERSION.dev.win64
     SLUG: ${VERSION:1:2}
-    <<: *build_variables
   artifacts:
     paths:
       - $ARCHIVE_NAME
