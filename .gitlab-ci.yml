@@ -1,6 +1,7 @@
 stages:
   - build
   - deploy
+  - downstream
 
 variables: &global_variables
   VERSION: 1.2.0
@@ -71,7 +72,7 @@ release:
   - |
     # Check if release already exists
     #
-    url=$GITHUB_API_URL/repos/turkoid/Injector/releases/tags/$CI_COMMIT_TAG
+    url=$GITHUB_API_URL/repos/turkoid/$CI_PROJECT_NAME/releases/tags/$CI_COMMIT_TAG
     headers='-H "Accept: application/vnd.github.v3+json"'
     opts='-s -w "%{http_code}" -o response'
     echo curl $opts $headers $url
@@ -98,7 +99,7 @@ release:
     # Create release
     #
     if [ -z "$upload_url" ]; then
-      url=$GITHUB_API_URL/repos/turkoid/Injector/releases
+      url=$GITHUB_API_URL/repos/turkoid/$CI_PROJECT_NAME/releases
       headers='-H "Accept: application/vnd.github.v3+json"'
       headers=$headers' -H "Authorization: token $GITHUB_API_TOKEN"'
       data=$(jq -n -c --arg tag_name "$CI_COMMIT_TAG" --arg body "$(cat changelog_fragment)" '{"tag_name": $tag_name, "body": $body}')
@@ -175,6 +176,7 @@ github_release:
 
 injector_file_bundles:
   extends: .deploy
+  stage: downstream
   script:
     - |
       # Trigger downstream pipeline
@@ -196,3 +198,4 @@ injector_file_bundles:
     <<: *deploy_variables
     GITLAB_API_URL: "https://gitlab.com/api/v4"
     INJECTOR_CONFIG_PROJECT_ID: 16080290
+    GIT_STRATEGY: none
