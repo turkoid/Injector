@@ -84,6 +84,7 @@ release:
       release_id=$(cat response | jq .id)
       upload_url=$(cat response | jq .upload_url)
       upload_url=${upload_url:1:-1}
+      upload_url=${upload_url%\{*}
       download_url=$(cat response | jq .assets[0].browser_download_url)
       download_url=${download_url:1:-1}
       echo Release already exists
@@ -116,6 +117,7 @@ release:
       release_id=$(cat response | jq .id)
       upload_url=$(cat response | jq .upload_url)
       upload_url=${upload_url:1:-1}
+      upload_url=${upload_url%\{*}
     fi
   - echo release_id=$release_id
   - echo upload_url=$upload_url
