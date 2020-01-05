@@ -43,7 +43,7 @@ dev:
     - master
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: '$CI_COMMIT_REF_SLUG-$CI_PIPELINE_IID'
+    ARCHIVE_VERSION: '$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID'
   artifacts:
     expire_in: 1 day
 
@@ -179,11 +179,11 @@ injector_file_bundles:
     - |
       # Trigger downstream pipeline
       #
+      tag_version=${CI_COMMIT_TAG:1}
       url=$GITLAB_API_URL/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
       form_data='-F "token=$CI_JOB_TOKEN"'
       form_data=$form_data' -F "ref=master"'
       form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$CI_COMMIT_TAG"'
-      form_data=$form_data' -F "variables[INJECTOR_ARCHIVE_NAME]=$ARCHIVE_NAME"'
       opts='-s -w "%{http_code}" -o response -X POST'
       echo curl $opts $form_data $url
       rc=$(eval curl $opts $form_data $url)
