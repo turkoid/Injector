@@ -4,6 +4,7 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
+  CI_COMMIT_TAG: 1.2.0
 
 .build:
   stage: build
@@ -58,7 +59,7 @@ release:
     <<: *build_variables
     ARCHIVE_VERSION: '$${CI_COMMIT_TAG:1}'
   artifacts:
-    expire_in: 1 month
+    expire_in: 1 day
 
 .gen_changelog_fragment: &gen_changelog_fragment
   - |
