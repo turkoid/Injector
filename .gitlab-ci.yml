@@ -4,7 +4,7 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
-  CI_COMMIT_TAG: 1.2.0
+  CI_COMMIT_TAG: v1.2.0
 
 .build:
   stage: build
@@ -178,8 +178,6 @@ github_release:
 injector_file_bundles:
   extends: .deploy
   stage: deploy
-  only:
-    - ci-injector-files
   script:
     - |
       # Trigger downstream pipeline
