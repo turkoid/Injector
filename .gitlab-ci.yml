@@ -179,7 +179,6 @@ injector_file_bundles:
     - |
       # Trigger downstream pipeline
       #
-      tag_version=${CI_COMMIT_TAG:1}
       url=$GITLAB_API_URL/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
       form_data='-F "token=$CI_JOB_TOKEN"'
       form_data=$form_data' -F "ref=master"'
