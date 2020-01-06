@@ -68,7 +68,7 @@ release:
     fragment_start="## $CI_COMMIT_TAG"
     fragment_end="## v"
     sed -n "/^$fragment_start/,/^$fragment_end/ {/^$fragment_start/ {p;n}; /^$fragment_end/ q; p}" CHANGELOG.md >changelog_fragment
-  - cat changelog_fragment
+    cat changelog_fragment
 
 .check_release: &check_release
   - |
@@ -116,8 +116,8 @@ release:
       upload_url=$(cat response | jq -r '.upload_url // empty')
       upload_url=${upload_url%\{*}
     fi
-  - echo release_id=$release_id
-  - echo upload_url=$upload_url
+    echo release_id=$release_id
+    echo upload_url=$upload_url
   - |
     # Sanity check
     #
@@ -145,7 +145,7 @@ release:
       fi
       download_url=$(cat response | jq -r '.browser_download_url // empty')
     fi
-  - echo download_url=$download_url
+    echo download_url=$download_url
   - |
     # Sanity check
     #
