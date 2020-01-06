@@ -115,12 +115,13 @@ release:
       release_id=$(cat response | jq -r '.id // empty')
       upload_url=$(cat response | jq -r '.upload_url // empty')
       upload_url=${upload_url%\{*}
+    fi
   - echo release_id=$release_id
   - echo upload_url=$upload_url
   - |
     # Sanity check
     #
-    if [[ -z $release_id || -z $upload_url ]]; then
+    if [ -z "$release_id"] || [ -z "$upload_url" ]; then
       echo "Something went wrong"
       return 1
     fi
@@ -148,7 +149,7 @@ release:
   - |
     # Sanity check
     #
-    if [[ -z $download_url ]]; then
+    if [ -z "$download_url" ]; then
       echo "Something went wrong"
       return 1
     fi
