@@ -1,6 +1,6 @@
 # Injector
 
-[![Build status](https://gitlab.com/turkoid/Injector/badges/master/pipeline.svg)](https://gitlab.com/turkoid/Injector/commits/master)
+[![Build status](https://img.shields.io/gitlab/pipeline/turkoid/Injector/master)](https://gitlab.com/turkoid/Injector/commits/master)
 
 Commandline tool that injects one or more DLLs into a process. Optionally also starts that process before injecting.
 
