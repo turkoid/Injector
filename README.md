@@ -1,14 +1,14 @@
 # Injector
 
-[![Build status](https://ci.appveyor.com/api/projects/status/ovg6mouwm3p4d51e/branch/master?svg=true)](https://ci.appveyor.com/project/turkoid/injector/branch/master)
+[![Build status](https://gitlab.com/turkoid/Injector/badges/master/pipeline.svg)](https://gitlab.com/turkoid/Injector/commits/master)
 
 Commandline tool that injects one or more DLLs into a process. Optionally also starts that process before injecting.
 
 ## Download
 
-Download latest release [here](https://github.com/turkoid/Injector/releases/latest)
+Download latest official release [here](https://github.com/turkoid/Injector/releases/latest)
 
-Download latest master build [here](https://ci.appveyor.com/project/turkoid/injector/build/artifacts?branch=master)
+Download latest dev build [here](https://gitlab.com/turkoid/Injector/pipelines/master/latest)
 
 ## Features
 
@@ -71,7 +71,7 @@ Download latest master build [here](https://ci.appveyor.com/project/turkoid/inje
     If passed, then program will pause before exiting, including errors (Default: `false`)
 
   * `-v | --verbose`
-    
+
     If passed, then all messages, including debug messages, will be printed to the console (Default: `false`)
 
   * `DLLS (pos. 0)`
@@ -133,5 +133,4 @@ Make sure the use the format specified above.
 
 ## Disclaimer
 
-Use this tool at your own risk. I am not responsible if you inject unsafe dlls or use this for malicious purposes. This was originally developed to make an easy to use launcher for injecting safe dlls into "The Outer Worlds" game. Any games that use anti-cheat systems, can and probably will detect this common method of injection. 
-
+Use this tool at your own risk. I am not responsible if you inject unsafe dlls or use this for malicious purposes. This was originally developed to make an easy to use launcher for injecting safe dlls into "The Outer Worlds" game. Any games that use anti-cheat systems, can and probably will detect this common method of injection.
