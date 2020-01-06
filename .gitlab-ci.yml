@@ -34,7 +34,7 @@ master:
     - master
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: '$VERSION-$CI_PIPELINE_IID'
+    ARCHIVE_VERSION: '$VERSION-$CI_JOB_ID'
   artifacts:
     expire_in: 6 months
 
@@ -49,7 +49,7 @@ dev:
       - $CI_COMMIT_TAG =~ /v\d+\.\d+\.\d+/
   variables:
     <<: *build_variables
-    ARCHIVE_VERSION: '$CI_COMMIT_REF_SLUG-$CI_PIPELINE_ID'
+    ARCHIVE_VERSION: '$CI_COMMIT_REF_SLUG-$CI_JOB_ID'
   artifacts:
     expire_in: 1 day
 
