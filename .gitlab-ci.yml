@@ -4,7 +4,6 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
-  CI_COMMIT_TAG: v1.2.0
 
 .build:
   stage: build
@@ -59,7 +58,7 @@ release:
     <<: *build_variables
     ARCHIVE_VERSION: '$${CI_COMMIT_TAG:1}'
   artifacts:
-    expire_in: 1 day
+    expire_in: 1 month
 
 .gen_changelog_fragment: &gen_changelog_fragment
   - |
@@ -196,7 +195,7 @@ injector_file_bundles:
       #
       url=$GITLAB_API_URL/projects/$INJECTOR_CONFIG_PROJECT_ID/trigger/pipeline
       form_data='-F "token=$CI_JOB_TOKEN"'
-      form_data=$form_data' -F "ref=ci-build-bundles"'
+      form_data=$form_data' -F "ref=master"'
       form_data=$form_data' -F "variables[INJECTOR_RELEASE_TAG]=$CI_COMMIT_TAG"'
       opts='-s -w "%{http_code}" -o response -X POST'
       echo curl $opts $form_data $url
