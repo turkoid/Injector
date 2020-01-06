@@ -81,12 +81,10 @@ release:
     rc=$(eval curl $opts $headers $url)
     echo http_code=$rc
     if [ $rc -eq 200 ]; then
-      release_id=$(cat response | jq .id)
-      upload_url=$(cat response | jq .upload_url)
-      upload_url=${upload_url:1:-1}
+      release_id=$(cat response | jq -r '.id // empty')
+      upload_url=$(cat response | jq -r '.upload_url // empty')
       upload_url=${upload_url%\{*}
-      download_url=$(cat response | jq .assets[0].browser_download_url)
-      download_url=${download_url:1:-1}
+      download_url=$(cat response | jq -r '.assets[0].browser_download_url // empty')
       echo Release already exists
     elif [ $rc -eq 404 ]; then
       release_id=
@@ -114,13 +112,18 @@ release:
         cat response | jq .
         return 1
       fi
-      release_id=$(cat response | jq .id)
-      upload_url=$(cat response | jq .upload_url)
-      upload_url=${upload_url:1:-1}
+      release_id=$(cat response | 'jq -r .id // empty')
+      upload_url=$(cat response | 'jq -r .upload_url // empty')
       upload_url=${upload_url%\{*}
-    fi
   - echo release_id=$release_id
   - echo upload_url=$upload_url
+  - |
+    # Sanity check
+    #
+    if [[ "$release_id" == "" || "$upload_url" == "" ]]; then
+      echo "Something went wrong"
+      return 1
+    fi
 
 .upload_release_artifacts: &upload_release_artifacts
   - |
@@ -139,10 +142,16 @@ release:
         cat response | jq .
         return 1
       fi
-      download_url=$(cat response | jq .browser_download_url)
-      download_url=${download_url:1:-1}
+      download_url=$(cat response | jq -r '.browser_download_url // empty'
     fi
   - echo download_url=$download_url
+  - |
+    # Sanity check
+    #
+    if [[ "$download_url" == "" ]]; then
+      echo "Something went wrong"
+      return 1
+    fi
 
 .deploy:
   stage: deploy
@@ -158,7 +167,7 @@ release:
       ARCHIVE_NAME=$(ls -1 | grep -m1 injector-$VERSION.*.zip || true)
       if [ ! -f "$ARCHIVE_NAME" ]; then
         ls -1
-        echo "ERROR: injector-$VERSION.*.zip missing"
+        echo 'ERROR: injector-$VERSION.*.zip missing'
         return 1
       fi
     - apk update
