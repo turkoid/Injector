@@ -120,7 +120,7 @@ release:
   - |
     # Sanity check
     #
-    if [[ "$release_id" == "" || "$upload_url" == "" ]]; then
+    if [[ -z $release_id || -z $upload_url ]]; then
       echo "Something went wrong"
       return 1
     fi
@@ -148,7 +148,7 @@ release:
   - |
     # Sanity check
     #
-    if [[ "$download_url" == "" ]]; then
+    if [[ -z $download_url ]]; then
       echo "Something went wrong"
       return 1
     fi
