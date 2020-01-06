@@ -4,6 +4,10 @@ stages:
 
 variables: &global_variables
   VERSION: 1.2.0
+  GITHUB_API_URL: https://api.github.com
+  GITLAB_API_URL: https://gitlab.com/api/v4
+  INJECTOR_PROJECT_ID: 16080289
+  INJECTOR_CONFIG_PROJECT_ID: 16080290
 
 .build:
   stage: build
@@ -16,8 +20,8 @@ variables: &global_variables
     - "dotnet publish -r win-x64 -c Release -o publish /p:PublishSingleFile=true"
     - ARCHIVE_NAME=injector-$ARCHIVE_VERSION-win64.zip
     - "zip -j $ARCHIVE_NAME LICENSE README.md CHANGELOG.md sample-config.ini publish/Injector.exe"
-    - echo archive_name=$ARCHIVE_NAME
-  after_script:
+    - echo "download: $GITLAB_API_URL/projects/$INJECTOR_PROJECT_ID/jobs/artifacts/$CI_COMMIT_REF_NAME/raw/$ARCHIVE_NAME?job=deploy"
+
   variables: &build_variables
     <<: *global_variables
   artifacts:
@@ -184,7 +188,6 @@ github_release:
     - *upload_release_artifacts
   variables:
     <<: *deploy_variables
-    GITHUB_API_URL: "https://api.github.com"
 
 injector_file_bundles:
   extends: .deploy
@@ -207,6 +210,4 @@ injector_file_bundles:
       fi
   variables:
     <<: *deploy_variables
-    GITLAB_API_URL: "https://gitlab.com/api/v4"
-    INJECTOR_CONFIG_PROJECT_ID: 16080290
     GIT_STRATEGY: none
