@@ -121,7 +121,7 @@ release:
   - |
     # Sanity check
     #
-    if [ -z "$release_id"] || [ -z "$upload_url" ]; then
+    if [ -z "$release_id" ] || [ -z "$upload_url" ]; then
       echo "Something went wrong"
       return 1
     fi
