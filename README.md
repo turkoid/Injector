@@ -123,7 +123,7 @@ You might need to adjust delays. Try and use the injector after starting the pro
 
 If the injector works, then adjust the delays. The most effective one is `delay`
 
-If the injector doesn't work, sometimes it helps to adjust the order of the injection, if using more than one dll.
+If the injector doesn't work, sometimes it helps to adjust the order of the injection, if using more than one DLL.
 
 Unfortunately, if the injection still fails, but works with other injection utilities, then open an issue and I'll try and take a look at it.
 
@@ -133,4 +133,4 @@ Make sure the use the format specified above.
 
 ## Disclaimer
 
-Use this tool at your own risk. I am not responsible if you inject unsafe dlls or use this for malicious purposes. This was originally developed to make an easy to use launcher for injecting safe dlls into "The Outer Worlds" game. Any games that use anti-cheat systems, can and probably will detect this common method of injection.
+Use this tool at your own risk. I am not responsible if you inject unsafe DLLs or use this for malicious purposes. This was originally developed to make an easy to use launcher for injecting safe dlls into "The Outer Worlds" game. Any games that use anti-cheat systems, can and probably will detect this common method of injection.
