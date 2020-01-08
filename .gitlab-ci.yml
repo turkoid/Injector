@@ -33,7 +33,7 @@ master:
   only:
     - master
   before_script:
-    <<: *build_before_script
+    - *build_before_script
     - ARCHIVE_VERSION="$VERSION"
     - BUILD_METADATA="$CI_JOB_ID"
   variables:
@@ -51,7 +51,7 @@ dev:
     variables:
       - $CI_COMMIT_TAG =~ /v\d+\.\d+\.\d+/
   before_script:
-    <<: *build_before_script
+    - *build_before_script
     - ARCHIVE_VERSION="$CI_COMMIT_REF_SLUG"
     - BUILD_METADATA="$CI_JOB_ID"
   variables:
@@ -65,7 +65,7 @@ release:
     variables:
       - $CI_COMMIT_TAG =~ /v\d+\.\d+\.\d+/
   before_script:
-    <<: *build_before_script
+    - *build_before_script
     - ARCHIVE_VERSION="${CI_COMMIT_TAG:1}"
     - BUILD_METADATA=
   variables:
