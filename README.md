@@ -24,11 +24,11 @@ Download latest dev build [here](https://gitlab.com/turkoid/Injector/pipelines/m
 
   * `-p | --pid`
 
-    The process id of the process to inject into. `process` and `open` are ignored if this is used
+    The process id of the process to inject into
 
   * `-x | --process`
 
-    The process name of the process to inject into. Alternatively, can be the name of the true process after using `start`
+    The process name of the process to inject into. Alternatively, can be the name of the true process after using `--start`
 
   * `-s | --start`
 
@@ -64,11 +64,15 @@ Download latest dev build [here](https://gitlab.com/turkoid/Injector/pipelines/m
 
   * `-q | --quiet`
 
-    If passed, then only errors are printed to the console. Everything is still printed to a log file (Default: `false`)
+    If passed, then only errors are printed to the console. Everything is still printed to the log file (Default: `false`)
 
   * `-i | --interactive`
 
-    If passed, then program will pause before exiting, including errors (Default: `false`)
+    If passed, then the program will pause before exiting, including errors (Default: `false`)
+
+  * `-e | --no-pause-on-error`
+
+    If passed, then the program will not pause on errors (Default: `false`)
 
   * `-v | --verbose`
 

@@ -56,6 +56,9 @@ namespace Injector {
         [Option('i', "interactive", Default = false, HelpText = "Whether to wait for user input")]
         public bool Interactive { get; set; }
 
+        [Option('e', "no-pause-on-error", Default = false, HelpText = "Whether to not pause on errors")]
+        public bool NoPauseOnError { get; set; }
+
         [Value(0, MetaName = "DLLs",
             HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order. Use 'dlls' for the config file")]
         public IEnumerable<string> Dlls { get; set; }
@@ -135,6 +138,8 @@ namespace Injector {
                 Timeout = ParseConfigValue("timeout", typeof(uint), Timeout);
                 Quiet = ParseConfigValue("quiet", typeof(bool), Quiet);
                 Verbose = ParseConfigValue("verbose", typeof(bool), Verbose);
+                Interactive = ParseConfigValue("interactive", typeof(bool), Verbose);
+                NoPauseOnError = ParseConfigValue("no-pause-on-error", typeof(bool), Verbose);
                 Dlls = ParseConfigValue("dlls", typeof(List<>), Dlls);
             }
         }
@@ -157,8 +162,16 @@ namespace Injector {
                 logger.Warn("No delay between injecting multiple DLLs. The process could crash");
             }
 
+            if (ProcessId != null && (ProcessName != null || StartProcess != null)) {
+                Program.HandleError("--pid and --process/--start cannot be combined");
+            }
+
             if (Quiet && Verbose) {
-                Program.HandleError("'quiet' and 'verbose' cannot be combined");
+                Program.HandleError("--quiet and --verbose cannot be combined");
+            }
+
+            if (Interactive && NoPauseOnError) {
+                Program.HandleError("--interactive and --no-pause-on-error cannot be combined");
             }
 
             if ((Dlls?.Count() ?? 0) == 0) {
@@ -198,20 +211,11 @@ namespace Injector {
             sb.AppendLine($"  multi-dll-delay={InjectLoopDelay}");
             sb.AppendLine($"  timeout={Timeout}");
             sb.AppendLine($"  quiet={Quiet}");
-            sb.AppendLine($"  interactive={Interactive}");
             sb.AppendLine($"  verbose={Verbose}");
+            sb.AppendLine($"  interactive={Interactive}");
+            sb.AppendLine($"  no-pause-on-error={NoPauseOnError}");
             sb.AppendLine($"  dlls={string.Join(' ', Dlls)}");
             logger.Debug(sb.ToString());
-        }
-
-        public struct CommandLineOption {
-            public char ShortOption;
-            public string LongOption;
-
-            public CommandLineOption(char shortOption, string longOption) {
-                ShortOption = shortOption;
-                LongOption = longOption;
-            }
         }
     }
 }

@@ -1,9 +1,9 @@
-﻿using CommandLine;
-using CommandLine.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using CommandLine;
+using CommandLine.Text;
 
 namespace Injector {
     class Program {
@@ -54,8 +54,10 @@ namespace Injector {
             }
         }
 
-        public static void WaitForUserInput() {
-            if (Options?.Interactive ?? false) {
+        public static void WaitForUserInput(bool isError = false) {
+            bool interactive = Options?.Interactive ?? false;
+            bool noPauseOnError = Options?.NoPauseOnError ?? false;
+            if (interactive || isError && !noPauseOnError) {
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey(true);
             }
@@ -67,7 +69,8 @@ namespace Injector {
                 logger.Debug(debugMessage);
             }
 
-            WaitForUserInput();
+            logger.Info("See log for more details");
+            WaitForUserInput(true);
             logger.Debug("Exiting...");
             Environment.Exit(1);
         }
