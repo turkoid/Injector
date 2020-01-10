@@ -217,15 +217,5 @@ namespace Injector {
             sb.AppendLine($"  dlls={string.Join(' ', Dlls)}");
             logger.Debug(sb.ToString());
         }
-
-        public struct CommandLineOption {
-            public char ShortOption;
-            public string LongOption;
-
-            public CommandLineOption(char shortOption, string longOption) {
-                ShortOption = shortOption;
-                LongOption = longOption;
-            }
-        }
     }
 }
