@@ -54,10 +54,10 @@ namespace Injector {
             }
         }
 
-        public static void WaitForUserInput() {
+        public static void WaitForUserInput(bool isError = false) {
             bool interactive = Options?.Interactive ?? false;
             bool noPauseOnError = Options?.NoPauseOnError ?? false;
-            if (interactive || !noPauseOnError) {
+            if (interactive || isError && !noPauseOnError) {
                 Console.WriteLine("Press any key to exit...");
                 Console.ReadKey(true);
             }
@@ -69,7 +69,8 @@ namespace Injector {
                 logger.Debug(debugMessage);
             }
 
-            WaitForUserInput();
+            logger.Info("See log for more details");
+            WaitForUserInput(true);
             logger.Debug("Exiting...");
             Environment.Exit(1);
         }
