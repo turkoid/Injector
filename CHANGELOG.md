@@ -4,7 +4,7 @@
 
 ### Changes
 
-- Injector will no pause on errors by default. Use new CLI option `--no-pause-on-error` to override this behaviour
+- Injector will no pause on errors by default. Use new CLI option `--no-pause-on-error` to override this behavior
 
 ## v1.2.0 - 2020-01-06
 
