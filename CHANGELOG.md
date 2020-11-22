@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.4.0 - 2020-11-22
+
+### Changes
+
+- `-c/--config` will default to `config.ini` or `config/*.ini` located in the same directory as the executable
+
 ## v1.3.0 - 2020-01-09
 
 ### Changes
