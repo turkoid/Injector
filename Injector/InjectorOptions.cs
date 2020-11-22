@@ -88,18 +88,34 @@ namespace Injector {
 
         public IniData Config {
             get {
-                if (_Config == null && !string.IsNullOrWhiteSpace(ConfigFile)) {
-                    var parser = new FileIniDataParser();
-                    FileInfo configFileInfo = new FileInfo(ConfigFile);
-                    logger.Info($"Reading from config file: {ConfigFile}");
-                    if (!File.Exists(configFileInfo.FullName)) {
-                        Program.HandleError($"Config file not found: {configFileInfo.FullName}");
+                if (_Config == null) {
+                    if (ConfigFile == null) {
+                        ConfigFile = "config.ini";
+                        if (!File.Exists("config.ini")) {
+                            logger.Debug("config.ini file not found, trying config/*.ini");
+                            try {
+                                ConfigFile = Directory.GetFiles("config", "*.ini").FirstOrDefault();
+                            } catch (DirectoryNotFoundException ex) {
+                                logger.Debug("No config folder found");
+                            }
+                        }
                     }
+                    
+                    if (string.IsNullOrWhiteSpace(ConfigFile)) {
+                        Program.HandleError("No config file specified/found");
+                    } else {
+                        FileInfo configFileInfo = new FileInfo(ConfigFile);
+                        var parser = new FileIniDataParser();
+                        logger.Info($"Reading from config file: {ConfigFile}");
+                        if (!File.Exists(configFileInfo.FullName)) {
+                            Program.HandleError($"Config file not found: {configFileInfo.FullName}");
+                        }
 
-                    try {
-                        _Config = parser.ReadFile(ConfigFile);
-                    } catch (Exception ex) {
-                        Program.HandleException("There was an issue parsing the config file!", ex);
+                        try {
+                            _Config = parser.ReadFile(ConfigFile);
+                        } catch (Exception ex) {
+                            Program.HandleException("There was an issue parsing the config file!", ex);
+                        }
                     }
                 }
 
