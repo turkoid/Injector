@@ -60,7 +60,7 @@ Download latest dev build [here](https://gitlab.com/turkoid/Injector/pipelines/m
 
   * `-c | --config`
 
-    Path to the config file. Options defined in the config file override command-line args
+    Path to the config file. Options defined in the config file override command-line args (Default: `config.ini` or `config/*.ini`)
 
   * `-q | --quiet`
 
@@ -118,6 +118,8 @@ required_dll=path\to\required\dll
 ```
 
 You can specify easy to use keys instead of the the full paths to the DLLs when using the command line or config file.  You can mix keys and paths, as well.
+
+Note: If no config file is passed as an argument, the executable will default to `config.ini` or the first `*.ini` file located in the `config` subfolder.
 
 ## Troubleshooting
 
