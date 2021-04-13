@@ -8,8 +8,10 @@ using CommandLine.Text;
 using IniParser;
 using IniParser.Model;
 
-namespace Injector {
-    public class InjectorOptions {
+namespace Injector
+{
+    public class InjectorOptions
+    {
         public const uint DEFAULT_INJECTION_DELAY = 5000;
         public const uint DEFAULT_INJECTION_LOOP_DELAY = 1000;
         public const uint DEFAULT_TIMEOUT = 30000;
@@ -36,12 +38,20 @@ namespace Injector {
         [Option("wait-for-dlls", HelpText = "The paths or config keys of DLLs the injector should wait to be loaded before attempting to inject")]
         public IEnumerable<string> WaitDlls { get; set; }
 
-        [Option('m', "multi-dll-delay", Default = DEFAULT_INJECTION_LOOP_DELAY,
-            HelpText = "Delay(ms) between injecting multiple DLLs")]
+        [Option(
+            'm',
+            "multi-dll-delay",
+            Default = DEFAULT_INJECTION_LOOP_DELAY,
+            HelpText = "Delay(ms) between injecting multiple DLLs"
+        )]
         public uint InjectLoopDelay { get; set; }
 
-        [Option('t', "timeout", Default = DEFAULT_TIMEOUT,
-            HelpText = "Timeout(ms) when finding process by name")]
+        [Option(
+            't',
+            "timeout",
+            Default = DEFAULT_TIMEOUT,
+            HelpText = "Timeout(ms) when finding process by name"
+        )]
         public uint Timeout { get; set; }
 
         [Option('c', "config", HelpText = "Path to config file to use")]
@@ -59,61 +69,89 @@ namespace Injector {
         [Option('e', "no-pause-on-error", Default = false, HelpText = "Whether to not pause on errors")]
         public bool NoPauseOnError { get; set; }
 
-        [Value(0, MetaName = "DLLs",
-            HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order. Use 'dlls' for the config file")]
+        [Value(
+            0,
+            MetaName = "DLLs",
+            HelpText = "The paths or config keys to the DLLs to inject. Order determines injection order. Use 'dlls' for the config file"
+        )]
         public IEnumerable<string> Dlls { get; set; }
 
         [Usage(ApplicationAlias = "injector")]
-        public static IEnumerable<Example> Examples {
-            get {
-                UnParserSettings shortOptions = new UnParserSettings();
+        public static IEnumerable<Example> Examples
+        {
+            get
+            {
+                var shortOptions = new UnParserSettings();
                 shortOptions.PreferShortName = true;
-                return new List<Example> {
+                return new List<Example>
+                {
                     new Example("Inject a dll into a process matching pid", new InjectorOptions {ProcessId = 1234, Dlls = new List<string> {"path\\to\\some.dll"}}),
-                    new Example("Start a process and inject multiple DLLs", shortOptions,
-                        new InjectorOptions {StartProcess = "process.exe", Dlls = new List<string> {"path\\to\\some.dll", "path\\to\\another.dll"}}),
-                    new Example("Start a Microsoft store app and use config file keys for the DLLs", shortOptions,
-                        new InjectorOptions {
+                    new Example(
+                        "Start a process and inject multiple DLLs",
+                        shortOptions,
+                        new InjectorOptions {StartProcess = "process.exe", Dlls = new List<string> {"path\\to\\some.dll", "path\\to\\another.dll"}}
+                    ),
+                    new Example(
+                        "Start a Microsoft store app and use config file keys for the DLLs",
+                        shortOptions,
+                        new InjectorOptions
+                        {
                             StartProcess = "Microsoft!App",
                             IsWindowsApp = true,
                             ProcessName = "process.exe",
                             ConfigFile = "config.ini",
                             Dlls = new List<string> {"key1", "key2"}
-                        })
+                        }
+                    )
                 };
             }
         }
 
         private IniData _Config { get; set; }
 
-        public IniData Config {
-            get {
-                if (_Config == null) {
-                    if (ConfigFile == null) {
+        public IniData Config
+        {
+            get
+            {
+                if (_Config == null)
+                {
+                    if (ConfigFile == null)
+                    {
                         ConfigFile = "config.ini";
-                        if (!File.Exists("config.ini")) {
+                        if (!File.Exists("config.ini"))
+                        {
                             logger.Debug("config.ini file not found, trying config/*.ini");
-                            try {
+                            try
+                            {
                                 ConfigFile = Directory.GetFiles("config", "*.ini").FirstOrDefault();
-                            } catch (DirectoryNotFoundException ex) {
+                            }
+                            catch (DirectoryNotFoundException ex)
+                            {
                                 logger.Debug("No config folder found");
                             }
                         }
                     }
-                    
-                    if (string.IsNullOrWhiteSpace(ConfigFile)) {
+
+                    if (string.IsNullOrWhiteSpace(ConfigFile))
+                    {
                         Program.HandleError("No config file specified/found");
-                    } else {
-                        FileInfo configFileInfo = new FileInfo(ConfigFile);
+                    }
+                    else
+                    {
+                        var configFileInfo = new FileInfo(ConfigFile);
                         var parser = new FileIniDataParser();
                         logger.Info($"Reading from config file: {ConfigFile}");
-                        if (!File.Exists(configFileInfo.FullName)) {
+                        if (!File.Exists(configFileInfo.FullName))
+                        {
                             Program.HandleError($"Config file not found: {configFileInfo.FullName}");
                         }
 
-                        try {
+                        try
+                        {
                             _Config = parser.ReadFile(ConfigFile);
-                        } catch (Exception ex) {
+                        }
+                        catch (Exception ex)
+                        {
                             Program.HandleException("There was an issue parsing the config file!", ex);
                         }
                     }
@@ -123,13 +161,17 @@ namespace Injector {
             }
         }
 
-        private dynamic ParseConfigValue(string key, Type type, dynamic defaultValue) {
-            if (Config.TryGetKey($"Config.{key}", out string value)) {
+        private dynamic ParseConfigValue(string key, Type type, dynamic defaultValue)
+        {
+            if (Config.TryGetKey($"Config.{key}", out var value))
+            {
                 logger.Debug($"Using config value for {key}");
                 value = value.Trim();
-                if (!value.Equals("")) {
-                    if (type == typeof(List<>)) {
-                        List<string> values = value.Split(' ').ToList();
+                if (!value.Equals(""))
+                {
+                    if (type == typeof(List<>))
+                    {
+                        var values = value.Split(' ').ToList();
                         return values;
                     }
 
@@ -140,8 +182,10 @@ namespace Injector {
             return defaultValue;
         }
 
-        public void UpdateFromFile() {
-            if (Config != null) {
+        public void UpdateFromFile()
+        {
+            if (Config != null)
+            {
                 logger.Debug("Overriding command line args with config values");
                 ProcessId = ParseConfigValue("pid", typeof(uint), ProcessId);
                 ProcessName = ParseConfigValue("process", typeof(string), ProcessName);
@@ -160,53 +204,68 @@ namespace Injector {
             }
         }
 
-        public FileInfo GetDllInfo(string key) {
+        public FileInfo GetDllInfo(string key)
+        {
             string filePath = null;
-            if (Config != null) {
+            if (Config != null)
+            {
                 filePath = Config.GetKey($"DLL.{key}")?.Trim();
             }
 
             return new FileInfo(string.IsNullOrEmpty(filePath) ? key : filePath);
         }
 
-        public void Validate() {
-            if (InjectionDelay == 0) {
+        public void Validate()
+        {
+            if (InjectionDelay == 0)
+            {
                 logger.Warn("No delay specified before attempting to inject. The process could crash");
             }
 
-            if (InjectLoopDelay == 0) {
+            if (InjectLoopDelay == 0)
+            {
                 logger.Warn("No delay between injecting multiple DLLs. The process could crash");
             }
 
-            if (ProcessId != null && (ProcessName != null || StartProcess != null)) {
+            if (ProcessId != null && (ProcessName != null || StartProcess != null))
+            {
                 Program.HandleError("--pid and --process/--start cannot be combined");
             }
 
-            if (Quiet && Verbose) {
+            if (Quiet && Verbose)
+            {
                 Program.HandleError("--quiet and --verbose cannot be combined");
             }
 
-            if (Interactive && NoPauseOnError) {
+            if (Interactive && NoPauseOnError)
+            {
                 Program.HandleError("--interactive and --no-pause-on-error cannot be combined");
             }
 
-            if ((Dlls?.Count() ?? 0) == 0) {
+            if ((Dlls?.Count() ?? 0) == 0)
+            {
                 Program.HandleError("No DLLs to inject");
             }
 
-            foreach (string dll in Dlls) {
-                FileInfo dllInfo = GetDllInfo(dll);
-                if (!File.Exists(dllInfo.FullName)) {
+            foreach (var dll in Dlls)
+            {
+                var dllInfo = GetDllInfo(dll);
+                if (!File.Exists(dllInfo.FullName))
+                {
                     Program.HandleError($"DLL not found: {dllInfo.FullName}");
                 }
             }
 
-            List<string> existingWaitDlls = new List<string>();
-            foreach (string dll in WaitDlls) {
-                FileInfo dllInfo = GetDllInfo(dll);
-                if (File.Exists(dllInfo.FullName)) {
+            var existingWaitDlls = new List<string>();
+            foreach (var dll in WaitDlls)
+            {
+                var dllInfo = GetDllInfo(dll);
+                if (File.Exists(dllInfo.FullName))
+                {
                     existingWaitDlls.Add(dll);
-                } else {
+                }
+                else
+                {
                     logger.Warn($"Wait DLL not found: {dllInfo.FullName}");
                 }
             }
@@ -214,8 +273,9 @@ namespace Injector {
             WaitDlls = existingWaitDlls;
         }
 
-        public void Log() {
-            StringBuilder sb = new StringBuilder();
+        public void Log()
+        {
+            var sb = new StringBuilder();
             sb.AppendLine("Injector Options:");
             sb.AppendLine($"  pid={ProcessId}");
             sb.AppendLine($"  process={ProcessName}");
