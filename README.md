@@ -119,7 +119,7 @@ required_dll=path\to\required\dll
 
 You can specify easy to use keys instead of the the full paths to the DLLs when using the command line or config file.  You can mix keys and paths, as well.
 
-Note: If no config file is passed as an argument, the executable will default to `config.ini` or the first `*.ini` file located in the `config` subfolder.
+Note: If no config file is passed as an argument, the injector will default to `config.ini` in the working directory or the first `*.ini` file located in the `config` subfolder.
 
 ## Troubleshooting
 
